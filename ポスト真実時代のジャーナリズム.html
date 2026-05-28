@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポスト真実時代のジャーナリズム | 読解穴埋め</title>
+  <style>
+    :root {
+      --primary: #2c5f8a;
+      --primary-light: #e8f2f9;
+      --accent: #d4670a;
+      --correct: #2a7a3a;
+      --correct-bg: #e8f5ea;
+      --wrong: #b02020;
+      --wrong-bg: #fdecea;
+      --hint-bg: #fff8e6;
+      --border: #ccd6e0;
+      --text: #1a1a2e;
+      --muted: #666;
+      --card-bg: #ffffff;
+      --page-bg: #f4f7fb;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", Georgia, serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 60px;
+    }
+
+    header {
+      max-width: 760px;
+      margin: 0 auto 28px;
+      text-align: center;
+    }
+
+    header .subtitle {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    header h1 {
+      font-size: clamp(18px, 4vw, 26px);
+      font-weight: bold;
+      color: var(--primary);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    header .author {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .goal-box {
+      display: inline-block;
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      font-size: 13px;
+      color: var(--primary);
+    }
+
+    .goal-box .label { font-weight: bold; margin-right: 6px; }
+
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .question-number {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      background: var(--primary-light);
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 15px;
+      line-height: 1.9;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .question-sentence {
+      font-size: 15px;
+      line-height: 2.6;
+      background: #fafbfd;
+      border: 1px solid #dde5ee;
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+    }
+
+    .blank-wrap {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: baseline;
+      vertical-align: middle;
+      margin: 0 4px;
+      gap: 3px;
+    }
+
+    .blank-input {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+      font-size: 15px;
+      border: none;
+      border-bottom: 2px solid var(--primary);
+      background: transparent;
+      text-align: center;
+      outline: none;
+      padding: 2px 6px;
+      min-width: 60px;
+      max-width: 380px;
+      width: 160px;
+      color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .blank-input.wide   { width: 260px; }
+    .blank-input.xwide  { width: 340px; }
+    .blank-input.narrow { width: 90px; }
+
+    .blank-input:focus {
+      border-bottom-color: var(--accent);
+      background: #fff8f0;
+    }
+
+    .blank-input.correct {
+      border-bottom-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--correct);
+    }
+
+    .blank-input.wrong {
+      border-bottom-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .blank-label {
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .feedback-inline {
+      display: none;
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 12px;
+    }
+
+    .feedback-inline.correct { color: var(--correct); }
+    .feedback-inline.wrong   { color: var(--wrong); }
+
+    .hint-box {
+      display: none;
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      font-size: 13px;
+      background: var(--hint-bg);
+      border: 1px dashed #e0b84a;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-top: 10px;
+      line-height: 1.9;
+    }
+
+    .hint-box .hint-label {
+      font-weight: bold;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      font-size: 13px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 9px 20px;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    button:active { transform: scale(0.97); }
+
+    .btn-check { background: var(--primary); color: #fff; }
+    .btn-check:hover { opacity: 0.88; }
+
+    .btn-reset { background: #e4e9ef; color: #444; }
+    .btn-reset:hover { opacity: 0.8; }
+
+    .btn-show-answer {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn-show-answer:hover { background: #fff4ec; }
+
+    .score-bar {
+      max-width: 760px;
+      margin: 0 auto 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .score-label {
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .score-track {
+      flex: 1;
+      height: 10px;
+      background: #e0e8f0;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--correct));
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .score-num {
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--primary);
+      white-space: nowrap;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .all-btn-row {
+      max-width: 760px;
+      margin: 0 auto 8px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-check-all {
+      background: var(--primary);
+      color: #fff;
+      font-size: 14px;
+      padding: 10px 28px;
+    }
+
+    .btn-reset-all {
+      background: #e4e9ef;
+      color: #444;
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 18px 16px; }
+      .blank-input { width: 130px; }
+      .blank-input.wide  { width: 210px; }
+      .blank-input.xwide { width: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">◇３ 情報社会を生きる</div>
+  <h1>ポスト真実時代のジャーナリズム</h1>
+  <div class="author">国谷裕子</div>
+  <div class="goal-box">
+    <span class="label">学習目標</span>筆者の述べる社会とメディアの関係を捉え、ジャーナリズムの役割について理解する
+  </div>
+</header>
+
+<div class="all-btn-row">
+  <button class="btn-check-all" onclick="checkAll()">すべて採点する</button>
+  <button class="btn-reset-all" onclick="resetAll()">リセット</button>
+</div>
+
+<div class="score-bar">
+  <span class="score-label">正答率</span>
+  <div class="score-track"><div class="score-fill" id="scoreFill"></div></div>
+  <span class="score-num" id="scoreNum">— / —</span>
+</div>
+
+<main>
+
+  <!-- 問１ -->
+  <div class="card">
+    <div class="question-number">問１</div>
+    <p class="question-text">筆者は、ポスト真実時代とはどんな社会だと述べているか、本文から抜き出そう。</p>
+    <div class="question-sentence">
+      <span class="blank-wrap">
+        <input type="text" class="blank-input narrow" id="blank1_1" placeholder="①">
+        <span class="blank-label">①</span>
+        <span class="feedback-inline" id="fb1_1"></span>
+      </span>よりも
+      <span class="blank-wrap">
+        <input type="text" class="blank-input wide" id="blank1_2" placeholder="②">
+        <span class="blank-label">②</span>
+        <span class="feedback-inline" id="fb1_2"></span>
+      </span>を信頼する社会。
+    </div>
+    <div class="hint-box" id="hint1">
+      <span class="hint-label">解答</span>
+      ①&nbsp;<strong>真実</strong>　②&nbsp;<strong>自分の感情に寄り添う情報</strong>
+    </div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(1)">採点</button>
+      <button class="btn-reset" onclick="resetCard(1)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(1)">解答を見る</button>
+    </div>
+  </div>
+
+  <!-- 問２ -->
+  <div class="card">
+    <div class="question-number">問２</div>
+    <p class="question-text">筆者は、ポスト真実時代の社会とメディアの関係についてどのように述べているか、本文から抜き出そう。</p>
+    <div class="question-sentence">
+      ポスト真実時代の社会に生きる人々が、<br>
+      情報を
+      <span class="blank-wrap">
+        <input type="text" class="blank-input wide" id="blank2_1" placeholder="①">
+        <span class="blank-label">①</span>
+        <span class="feedback-inline" id="fb2_1"></span>
+      </span>のではなく、<br>
+      <span class="blank-wrap">
+        <input type="text" class="blank-input wide" id="blank2_2" placeholder="②">
+        <span class="blank-label">②</span>
+        <span class="feedback-inline" id="fb2_2"></span>
+      </span>メディアを選択するという関係。
+    </div>
+    <div class="hint-box" id="hint2">
+      <span class="hint-label">解答</span>
+      ①&nbsp;<strong>メディアから選択する</strong>　②&nbsp;<strong>自らの感情が一体化できる</strong>
+    </div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(2)">採点</button>
+      <button class="btn-reset" onclick="resetCard(2)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(2)">解答を見る</button>
+    </div>
+  </div>
+
+  <!-- 問３ -->
+  <div class="card">
+    <div class="question-number">問３</div>
+    <p class="question-text">筆者は、ジャーナリズムの役割をどのようなことだと考えているか、まとめよう。</p>
+    <div class="question-sentence">
+      <span class="blank-wrap">
+        <input type="text" class="blank-input" id="blank3_1" placeholder="①">
+        <span class="blank-label">①</span>
+        <span class="feedback-inline" id="fb3_1"></span>
+      </span>や
+      <span class="blank-wrap">
+        <input type="text" class="blank-input narrow" id="blank3_2" placeholder="②">
+        <span class="blank-label">②</span>
+        <span class="feedback-inline" id="fb3_2"></span>
+      </span>を提示し続けることで、<br>
+      <span class="blank-wrap">
+        <input type="text" class="blank-input xwide" id="blank3_3" placeholder="③（例）">
+        <span class="blank-label">③（例）</span>
+        <span class="feedback-inline" id="fb3_3"></span>
+      </span>ための基盤として機能すること。
+    </div>
+    <div class="hint-box" id="hint3">
+      <span class="hint-label">解答</span>
+      ①&nbsp;<strong>異質なもの</strong>　②&nbsp;<strong>多様性</strong><br>
+      ③（例）<strong>自分とは異なる人や思想と出会う場となり、社会的対話を生む</strong>
+    </div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(3)">採点</button>
+      <button class="btn-reset" onclick="resetCard(3)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(3)">解答を見る</button>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ─── 正解データ ───────────────────────────────────────────────
+  const answers = {
+    'blank1_1': { type: 'exact',   values: ['真実'] },
+    'blank1_2': { type: 'exact',   values: ['自分の感情に寄り添う情報'] },
+    'blank2_1': { type: 'exact',   values: ['メディアから選択する'] },
+    'blank2_2': { type: 'exact',   values: ['自らの感情が一体化できる'] },
+    'blank3_1': { type: 'exact',   values: ['異質なもの'] },
+    'blank3_2': { type: 'exact',   values: ['多様性'] },
+    'blank3_3': { type: 'example' },
+  };
+
+  const cardBlanks = {
+    1: ['blank1_1', 'blank1_2'],
+    2: ['blank2_1', 'blank2_2'],
+    3: ['blank3_1', 'blank3_2', 'blank3_3'],
+  };
+
+  function normalize(s) {
+    return s.trim()
+      .replace(/\s+/g, '')
+      .replace(/（/g, '(')
+      .replace(/）/g, ')');
+  }
+
+  function checkBlank(id) {
+    const input = document.getElementById(id);
+    const fb    = document.getElementById('fb' + id.replace('blank', ''));
+    const ans   = answers[id];
+    const val   = input.value;
+
+    if (!val.trim()) {
+      input.classList.remove('correct', 'wrong');
+      fb.style.display = 'none';
+      return null;
+    }
+
+    let result;
+    if (ans.type === 'example') {
+      result = true;
+      input.classList.remove('wrong');
+      input.classList.add('correct');
+      fb.className = 'feedback-inline correct';
+      fb.textContent = '記入済';
+      fb.style.display = 'block';
+    } else {
+      const norm = normalize(val);
+      result = ans.values.some(v => normalize(v) === norm);
+      input.classList.remove('correct', 'wrong');
+      input.classList.add(result ? 'correct' : 'wrong');
+      fb.className = 'feedback-inline ' + (result ? 'correct' : 'wrong');
+      fb.textContent = result ? '○' : '×';
+      fb.style.display = 'block';
+    }
+    return result;
+  }
+
+  function checkCard(n) {
+    cardBlanks[n].forEach(id => checkBlank(id));
+    updateScore();
+  }
+
+  function resetCard(n) {
+    cardBlanks[n].forEach(id => {
+      const input = document.getElementById(id);
+      input.value = '';
+      input.classList.remove('correct', 'wrong');
+      const fb = document.getElementById('fb' + id.replace('blank', ''));
+      if (fb) fb.style.display = 'none';
+    });
+    document.getElementById('hint' + n).style.display = 'none';
+    updateScore();
+  }
+
+  function showAnswer(n) {
+    const hint = document.getElementById('hint' + n);
+    hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function checkAll() {
+    Object.keys(answers).forEach(id => checkBlank(id));
+    updateScore();
+  }
+
+  function resetAll() {
+    for (let n = 1; n <= 3; n++) resetCard(n);
+  }
+
+  function updateScore() {
+    const allBlanks = Object.keys(answers);
+    let total = 0, correct = 0;
+    allBlanks.forEach(id => {
+      const input = document.getElementById(id);
+      if (!input) return;
+      const val = input.value.trim();
+      if (!val) return;
+      total++;
+      const ans = answers[id];
+      if (ans.type === 'example') {
+        correct++;
+      } else {
+        if (ans.values.some(v => normalize(v) === normalize(val))) correct++;
+      }
+    });
+
+    const fill = document.getElementById('scoreFill');
+    const num  = document.getElementById('scoreNum');
+    const maxBlanks = allBlanks.length;
+
+    if (total === 0) {
+      fill.style.width = '0%';
+      num.textContent  = '— / —';
+    } else {
+      const pct = Math.round((correct / maxBlanks) * 100);
+      fill.style.width = pct + '%';
+      num.textContent  = correct + ' / ' + maxBlanks + ' 問正解';
+    }
+  }
+
+  document.querySelectorAll('.blank-input').forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const m = input.id.match(/blank(\d+)_/);
+        if (m) checkCard(parseInt(m[1]));
+      }
+    });
+  });
+</script>
+</body>
+</html>
