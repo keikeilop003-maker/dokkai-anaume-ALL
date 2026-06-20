@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ものとことば｜語彙・読解学習</title><style>
+    :root {
+      --primary: #2c5f8a;
+      --primary-light: #e8f2f9;
+      --accent: #d4670a;
+      --correct: #2a7a3a;
+      --correct-bg: #e8f5ea;
+      --wrong: #b02020;
+      --wrong-bg: #fdecea;
+      --hint-bg: #fff8e6;
+      --border: #ccd6e0;
+      --text: #1a1a2e;
+      --muted: #666;
+      --card-bg: #ffffff;
+      --page-bg: #f4f7fb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", Georgia, serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 60px;
+    }
+
+    /* header */
+    header { max-width: 760px; margin: 0 auto 28px; text-align: center; }
+    header .subtitle { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    header h1 { font-size: clamp(18px,4vw,26px); font-weight: bold; color: var(--primary); line-height: 1.4; margin-bottom: 4px; }
+    header .author { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+    .goal-box { display: inline-block; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 4px; padding: 8px 16px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--primary); }
+    .goal-box .label { font-weight: bold; margin-right: 6px; }
+
+    /* section heading */
+    .section-heading { max-width: 760px; margin: 44px auto 20px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 17px; font-weight: bold; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px; }
+    .section-description { max-width: 760px; margin: -12px auto 16px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--muted); }
+
+    /* buttons */
+    button { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; font-weight: bold; border: none; border-radius: 6px; padding: 9px 20px; cursor: pointer; transition: opacity .15s, transform .1s; }
+    button:active { transform: scale(.97); }
+    .btn-check { background: var(--primary); color: #fff; }
+    .btn-check:hover { opacity: .88; }
+    .btn-reset { background: #e4e9ef; color: #444; }
+    .btn-reset:hover { opacity: .8; }
+    .btn-show-answer { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+    .btn-show-answer:hover { background: #fff4ec; }
+    .btn-reset-all { background: #e4e9ef; color: #444; font-size: 14px; padding: 10px 20px; }
+
+    /* score bar / btn row – default 760px */
+    .all-btn-row { max-width: 760px; margin: 0 auto 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .score-bar   { max-width: 760px; margin: 0 auto 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .score-label { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .score-track { flex: 1; height: 10px; background: #e0e8f0; border-radius: 99px; overflow: hidden; }
+    .score-fill  { height: 100%; background: linear-gradient(90deg, var(--primary), var(--correct)); border-radius: 99px; width: 0%; transition: width .5s ease; }
+    .score-num   { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 15px; font-weight: bold; color: var(--primary); white-space: nowrap; min-width: 60px; text-align: right; }
+
+    /* section bottom (score bar + reset under last question) */
+    .section-bottom { margin-top: 16px; }
+    .section-bottom .score-bar   { margin-bottom: 10px; }
+    .section-bottom .all-btn-row { margin-top: 0; margin-bottom: 0; }
+
+    /* reading cards */
+    main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .question-number { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; font-weight: bold; color: var(--primary); background: var(--primary-light); display: inline-block; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .question-text { font-size: 15px; line-height: 1.9; margin-bottom: 16px; }
+    .question-sentence { font-size: 15px; line-height: 2.6; background: #fafbfd; border: 1px solid #dde5ee; border-radius: 6px; padding: 14px 18px; margin-bottom: 16px; }
+    .bullet-item { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+    .bullet-item .bullet-mark { flex-shrink: 0; }
+    .eq-line { margin-top: 8px; padding-left: 1em; }
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .hint-box { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; background: var(--hint-bg); border: 1px dashed #e0b84a; border-radius: 6px; padding: 10px 14px; margin-top: 10px; line-height: 1.9; }
+    .hint-box .hint-label { font-weight: bold; color: var(--accent); margin-right: 6px; }
+
+    /* blanks */
+    .blank-wrap  { display: inline-flex; align-items: baseline; vertical-align: middle; margin: 0 4px; }
+    .blank-input { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 15px; border: none; border-bottom: 2px solid var(--primary); background: transparent; text-align: center; outline: none; padding: 2px 6px; min-width: 60px; max-width: 380px; width: 160px; color: var(--text); transition: border-color .2s, background .2s; }
+    .blank-input.wide   { width: 260px; }
+    .blank-input.xwide  { width: 340px; }
+    .blank-input.narrow { width: 90px; }
+    .blank-input:focus  { border-bottom-color: var(--accent); background: #fff8f0; }
+    .blank-input.correct { border-bottom-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+    .blank-input.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+
+    /* feedback inline (reading) */
+    .feedback-inline { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; font-weight: bold; margin-left: 4px; }
+    .feedback-inline.correct { color: var(--correct); }
+    .feedback-inline.wrong   { color: var(--wrong); }
+    @keyframes correctPop {
+      0%  { opacity:0; transform:scale(.6); }
+      65% { opacity:1; transform:scale(1.3); }
+      100%{ opacity:1; transform:scale(1); }
+    }
+    .feedback-inline.correct { animation: correctPop .35s ease forwards; }
+
+    /* ── MC section ── */
+    .mc-wrap .section-heading,
+    .mc-wrap .section-description,
+    .mc-wrap .section-bottom .all-btn-row,
+    .mc-wrap .section-bottom .score-bar { max-width: 1200px; }
+
+    .mc-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 980px) { .mc-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px) { .mc-grid { grid-template-columns: 1fr; } }
+
+    .mc-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vocab-word {
+      font-size: 51px;
+      font-weight: bold;
+      color: var(--text);
+      text-align: center;
+      margin: 6px 0 16px;
+      letter-spacing: .05em;
+      line-height: 1.2;
+    }
+
+    .choices { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .choice-btn {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 13px;
+      font-weight: normal;
+      background: #f4f7fb;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.6;
+      transition: background .12s, border-color .12s;
+    }
+    .choice-btn:hover:not(.correct):not(.wrong):not(.reveal-correct) { background: var(--primary-light); border-color: var(--primary); }
+    .choice-btn.correct       { background: var(--correct-bg); border-left: 4px solid var(--correct); color: var(--correct); font-weight: bold; }
+    .choice-btn.correct::before { content: "✓ "; }
+    .choice-btn.wrong         { background: var(--wrong-bg); border-left: 4px solid var(--wrong); color: var(--wrong); }
+    .choice-btn.wrong::before { content: "✗ "; }
+    .choice-btn.reveal-correct { background: var(--correct-bg); border-left: 4px solid var(--correct); color: var(--correct); }
+    .choice-btn.reveal-correct::before { content: ""; }
+    .choices.graded .choice-btn { cursor: default; pointer-events: none; }
+
+    .mc-result {
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    .mc-result.correct {
+      display: block;
+      background: var(--correct-bg);
+      border: 1px solid var(--correct);
+      color: var(--correct);
+      animation: correctPop .35s ease forwards;
+    }
+    .mc-result.wrong {
+      display: block;
+      background: var(--wrong-bg);
+      border: 1px solid var(--wrong);
+      color: var(--wrong);
+    }
+
+    /* ── SC section ── */
+    .sc-wrap .section-heading,
+    .sc-wrap .section-description,
+    .sc-wrap .vocab-group,
+    .sc-wrap .section-bottom .all-btn-row,
+    .sc-wrap .section-bottom .score-bar { max-width: 1100px; }
+
+    .vocab-group {
+      max-width: 1100px;
+      margin: 0 auto 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+    .vg-label { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; font-weight: bold; color: var(--muted); white-space: nowrap; margin-right: 4px; }
+    .vg-word  { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 14px; background: var(--primary-light); color: var(--primary); border: 1px solid #b0c8e0; border-radius: 4px; padding: 2px 10px; }
+
+    .sc-grid { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 5px; }
+
+    .sc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; }
+    .sc-main-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+    .sc-num { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 11px; font-weight: bold; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .sc-sentence { flex: 1; min-width: 0; font-size: 15px; line-height: 2.4; }
+    /* feedback as flex sibling of button (not inside sentence) */
+    .sc-main-row .feedback-inline { flex-shrink: 0; white-space: nowrap; margin-left: 2px; }
+    .sc-check-btn { flex-shrink: 0; padding: 6px 14px; font-size: 12px; }
+    .sc-reveal { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; color: var(--wrong); padding: 2px 4px 3px 48px; line-height: 1.4; }
+
+    @media (max-width: 520px) {
+      .blank-input { width: 120px; } .blank-input.wide { width: 200px; } .blank-input.xwide { width: 250px; }
+      .vocab-word { font-size: 36px; } .choice-btn { font-size: 12px; }
+      .sc-main-row { flex-wrap: wrap; }
+    }
+
+    /* ── kat-wrap (カタカナ語4択) ── */
+    .kat-wrap .section-heading,
+    .kat-wrap .section-description,
+    .kat-wrap .section-bottom .score-bar,
+    .kat-wrap .section-bottom .all-btn-row { max-width: 760px; }
+    .kat-wrap .mc-grid { max-width: 760px; grid-template-columns: repeat(2,1fr); }
+    @media (max-width: 520px) { .kat-wrap .mc-grid { grid-template-columns: 1fr; } }
+    .kat-answer-row { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 8px; }
+    .kat-reveal { display: none; font-family: "Hiragino Kaku Gothic ProN",sans-serif; font-size: 12px; color: var(--wrong); margin-top: 6px; text-align: center; }
+    .kat-wrap .vocab-word { font-size: 18px; text-align: left; letter-spacing: 0; line-height: 1.6; margin: 6px 0 10px; }
+
+    /* ── knj-wrap (漢字読み＋書き) ── */
+    .knj-wrap .section-heading { max-width: 1200px; }
+    .knj-desc { max-width: 1200px; }
+    .knj-bottom .score-bar,
+    .knj-bottom .all-btn-row { max-width: 1200px; }
+
+    /* ── rd-grid (漢字読みカード) ── */
+    .rd-grid { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    @media (max-width: 600px) { .rd-grid { grid-template-columns: repeat(2,1fr); } }
+    .rd-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 12px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .rd-kanji { font-size: 40px; font-weight: bold; margin: 4px 0 10px; }
+    .rd-input { font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 16px; border: none; border-bottom: 2px solid var(--primary); background: transparent; text-align: center; outline: none; padding: 2px 4px; width: 100%; max-width: 110px; color: var(--text); transition: border-color .2s, background .2s; }
+    .rd-input:focus   { border-bottom-color: var(--accent); background: #fff8f0; }
+    .rd-input.correct { border-bottom-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+    .rd-input.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+    .rd-fb { font-family: "Hiragino Kaku Gothic ProN",sans-serif; font-size: 12px; font-weight: bold; margin-top: 4px; min-height: 16px; }
+    .rd-fb.correct { color: var(--correct); }
+    .rd-fb.wrong   { color: var(--wrong); }
+    .rd-reveal { display: none; font-family: "Hiragino Kaku Gothic ProN",sans-serif; font-size: 12px; color: var(--wrong); margin-top: 3px; }
+
+    /* ── knj-phrase (漢字書き) ── */
+    .knj-phrase { font-size: 20px; text-align: center; margin: 6px 0 14px; line-height: 1.6; }
+    .knj-kata   { color: var(--wrong); font-weight: bold; text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── 復習資料ボタン（固定） ── */
+    #study-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      box-shadow: 0 4px 16px rgba(0,0,0,.22);
+      z-index: 200;
+      cursor: pointer;
+      border: none;
+      line-height: 1.4;
+      text-align: center;
+    }
+    #study-btn:hover { opacity: .88; }
+
+  </style></head><body><header><div class="subtitle">ものとことば</div><h1>ものとことば</h1><div class="author">鈴木孝夫</div><div class="goal-box"><span class="label">学習目標</span>ことばとものの関係について、一般的な見方と筆者の見方を対比して理解する</div></header><div class="section-heading">◆ 読解穴埋め</div><main><div class="card"><div class="question-number">問１</div><div class="question-text">第一段で示される、ものとことばの一般的な対応関係を整理しよう。</div><div class="question-sentence">ものとは事物や<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank1_1" placeholder="①"></span><span class="feedback-inline" id="fb1_1"></span>であり、こととは事物の動き・性質・<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank1_2" placeholder="②"></span><span class="feedback-inline" id="fb1_2"></span>などである。これらを表す<span class="blank-wrap"><input type="text" class="blank-input" id="blank1_3" placeholder="③"></span><span class="feedback-inline" id="fb1_3"></span>が対応している、というのが一般的な考え方である。</div><div class="hint-box" id="hint1"><span class="hint-label">答え</span>①&nbsp;対象　②&nbsp;関係　③&nbsp;適切なことば</div><div class="btn-row"><button class="btn-check" onclick="checkCard(1)">採点</button><button class="btn-reset" onclick="resetCard(1)">リセット</button><button class="btn-show-answer" onclick="showAnswer(1)">答えを見る</button></div></div><div class="card"><div class="question-number">問２</div><div class="question-text">哲学者や言語学者の考え方として、筆者はものとことばの関係をどのように捉えているか。</div><div class="question-sentence"><div class="bullet-item"><span class="bullet-mark">・</span><span>ものが先にあってことばがつけられるのではなく、ことばがものを<span class="blank-wrap"><input type="text" class="blank-input" id="blank2_1" placeholder="①"></span><span class="feedback-inline" id="fb2_1"></span>いる。</span></div><div class="bullet-item"><span class="bullet-mark">・</span><span>名称の違いは単なる<span class="blank-wrap"><input type="text" class="blank-input" id="blank2_2" placeholder="②"></span><span class="feedback-inline" id="fb2_2"></span>の相違ではなく、かなり<span class="blank-wrap"><input type="text" class="blank-input" id="blank2_3" placeholder="③"></span><span class="feedback-inline" id="fb2_3"></span>を提示している。</span></div></div><div class="hint-box" id="hint2"><span class="hint-label">答え</span>①&nbsp;あらしめて　②&nbsp;レッテル　③&nbsp;違ったもの</div><div class="btn-row"><button class="btn-check" onclick="checkCard(2)">採点</button><button class="btn-reset" onclick="resetCard(2)">リセット</button><button class="btn-show-answer" onclick="showAnswer(2)">答えを見る</button></div></div><div class="card"><div class="question-number">問３</div><div class="question-text">筆者の「初めにことばありき」という見方をまとめよう。</div><div class="question-sentence">ことばは、私たちの世界認識の手がかりであり、<span class="blank-wrap"><input type="text" class="blank-input" id="blank3_1" placeholder="①"></span><span class="feedback-inline" id="fb3_1"></span>である。素材としての世界を整理して把握する時に、どの部分・どの性質に<span class="blank-wrap"><input type="text" class="blank-input" id="blank3_2" placeholder="②"></span><span class="feedback-inline" id="fb3_2"></span>をおくべきかを決定する仕掛けがことばである。</div><div class="hint-box" id="hint3"><span class="hint-label">答え</span>①&nbsp;唯一の窓口　②&nbsp;認識の焦点</div><div class="btn-row"><button class="btn-check" onclick="checkCard(3)">採点</button><button class="btn-reset" onclick="resetCard(3)">リセット</button><button class="btn-show-answer" onclick="showAnswer(3)">答えを見る</button></div></div><div class="card"><div class="question-number">問４</div><div class="question-text">第三段で述べられる、ことばのはたらきをまとめよう。</div><div class="question-sentence">ことばは、渾沌とした連続的で切れ目のない素材の世界に、人間の見地から<span class="blank-wrap"><input type="text" class="blank-input" id="blank4_1" placeholder="①"></span><span class="feedback-inline" id="fb4_1"></span>の分節を与えて分類する。言語は、世界を<span class="blank-wrap"><input type="text" class="blank-input" id="blank4_2" placeholder="②"></span><span class="feedback-inline" id="fb4_2"></span>と区分された、ものやことの集合であるかのように提示する<span class="blank-wrap"><input type="text" class="blank-input" id="blank4_3" placeholder="③"></span><span class="feedback-inline" id="fb4_3"></span>をもつ。</div><div class="hint-box" id="hint4"><span class="hint-label">答え</span>①&nbsp;虚構　②&nbsp;整然　③&nbsp;虚構性</div><div class="btn-row"><button class="btn-check" onclick="checkCard(4)">採点</button><button class="btn-reset" onclick="resetCard(4)">リセット</button><button class="btn-show-answer" onclick="showAnswer(4)">答えを見る</button></div></div></main><div class="section-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="scoreFill"></div></div><span class="score-num" id="scoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-reset-all" onclick="resetAll()">リセット</button></div></div><div class="mc-wrap"><div class="section-heading">◆ 語彙：意味4択</div><div class="section-description">次の語句の意味として最も適切なものをクリックして選びなさい。</div><div class="mc-grid"><div class="mc-card"><div class="question-number">語句 1</div><div class="vocab-word">多岐</div><div class="choices" id="choices_mc1"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc1','ア')">ア　一つの方向だけに単純にまとまっていること。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc1','イ')">イ　いろいろな面に関係があり、処理が簡単ではないこと。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc1','ウ')">ウ　全てのものが整然と並んでいること。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc1','エ')">エ　目に見えないものを想像でつくること。</button></div><div class="mc-result" id="mc_result_mc1"></div></div><div class="mc-card"><div class="question-number">語句 2</div><div class="vocab-word">森羅万象</div><div class="choices" id="choices_mc2"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc2','ア')">ア　机の上にある文房具だけを指すことば。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc2','イ')">イ　人間が作り出した製品の総称。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc2','ウ')">ウ　宇宙間に存在する一切のもの。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc2','エ')">エ　国によって呼び名が違う動物のこと。</button></div><div class="mc-result" id="mc_result_mc2"></div></div><div class="mc-card"><div class="question-number">語句 3</div><div class="vocab-word">あらしめる</div><div class="choices" id="choices_mc3"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc3','ア')">ア　ある形や様相をもって存在させる。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc3','イ')">イ　ものに名前を書いた紙を貼る。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc3','ウ')">ウ　外見の特徴だけで区別する。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc3','エ')">エ　いろいろな方向に分かれる。</button></div><div class="mc-result" id="mc_result_mc3"></div></div><div class="mc-card"><div class="question-number">語句 4</div><div class="vocab-word">空々漠々</div><div class="choices" id="choices_mc4"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc4','ア')">ア　一面に何も無く広々として、とらえどころのない様子。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc4','イ')">イ　細かい網目のように入り組んでいる様子。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc4','ウ')">ウ　同じものが違う名で呼ばれる様子。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc4','エ')">エ　はっきり分類されて動かない様子。</button></div><div class="mc-result" id="mc_result_mc4"></div></div><div class="mc-card"><div class="question-number">語句 5</div><div class="vocab-word">抽象的</div><div class="choices" id="choices_mc5"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc5','ア')">ア　具体的な形や材質だけを見る様子。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc5','イ')">イ　同類のもの一般を頭の中で取り出して考える様子。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc5','ウ')">ウ　対象をそのまま写し取る様子。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc5','エ')">エ　言語によらず世界を直接見る様子。</button></div><div class="mc-result" id="mc_result_mc5"></div></div><div class="mc-card"><div class="question-number">語句 6</div><div class="vocab-word">相対</div><div class="choices" id="choices_mc6"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc6','ア')">ア　それだけで独立して意味が決まること。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc6','イ')">イ　他と関連させて初めてその存在や意味が考えられること。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc6','ウ')">ウ　全てを一つにまとめること。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc6','エ')">エ　過去から未来まで変わらないこと。</button></div><div class="mc-result" id="mc_result_mc6"></div></div><div class="mc-card"><div class="question-number">語句 7</div><div class="vocab-word">渾沌</div><div class="choices" id="choices_mc7"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc7','ア')">ア　切れ目なく入り混じって、見通しが立たない様子。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc7','イ')">イ　一定の規則で整然と区分された様子。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc7','ウ')">ウ　ものとことばが一対一で完全に対応する様子。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc7','エ')">エ　人間の目的にぴったり合う様子。</button></div><div class="mc-result" id="mc_result_mc7"></div></div><div class="mc-card"><div class="question-number">語句 8</div><div class="vocab-word">虚構</div><div class="choices" id="choices_mc8"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc8','ア')">ア　実際にあるものをそのまま写すこと。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc8','イ')">イ　事実ではないことを事実のようにつくること。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc8','ウ')">ウ　外国語を辞書で調べること。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc8','エ')">エ　対象に固有の名称があること。</button></div><div class="mc-result" id="mc_result_mc8"></div></div><div class="mc-card"><div class="question-number">語句 9</div><div class="vocab-word">生成</div><div class="choices" id="choices_mc9"><button class="choice-btn" data-choice="ア" onclick="selectMc('mc9','ア')">ア　物としての形が現れる、または形を現すこと。</button>
+<button class="choice-btn" data-choice="イ" onclick="selectMc('mc9','イ')">イ　対象に別の名前をつけ直すこと。</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectMc('mc9','ウ')">ウ　一つの考えを疑い続けること。</button>
+<button class="choice-btn" data-choice="エ" onclick="selectMc('mc9','エ')">エ　用途に応じて定義を短くすること。</button></div><div class="mc-result" id="mc_result_mc9"></div></div></div><div class="section-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="mcScoreFill"></div></div><span class="score-num" id="mcScoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-reset-all" onclick="resetAllMc()">リセット</button></div></div></div><div class="sc-wrap"><div class="section-heading">◆ 語彙：短文穴埋め</div><div class="section-description">（　）に当てはまる語句を書きなさい。文に合う形に直して答えなさい。</div><div class="vocab-group"><span class="vg-label">語群</span><span class="vg-word">多岐</span><span class="vg-word">森羅万象</span><span class="vg-word">あらしめる</span><span class="vg-word">空々漠々</span><span class="vg-word">抽象的</span><span class="vg-word">相対</span><span class="vg-word">渾沌</span><span class="vg-word">虚構</span><span class="vg-word">生成</span></div><div class="sc-grid"><div class="sc-card"><div class="sc-main-row"><span class="sc-num">1</span><span class="sc-sentence">この問題は政治・経済・文化など<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc1"></span>にわたっている。</span><span class="feedback-inline" id="fb_sc1"></span><button class="btn-check sc-check-btn" id="sc_check_1" onclick="checkScCard(1)">採点</button></div><div class="sc-reveal" id="sc_reveal_1"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">2</span><span class="sc-sentence"><span class="blank-wrap"><input type="text" class="blank-input" id="blank_sc2"></span>には、すべてそれを表すことばがあるという実感を筆者は示した。</span><span class="feedback-inline" id="fb_sc2"></span><button class="btn-check sc-check-btn" id="sc_check_2" onclick="checkScCard(2)">採点</button></div><div class="sc-reveal" id="sc_reveal_2"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">3</span><span class="sc-sentence">ことばがものを<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc3"></span>ている、という見方が筆者の立場である。</span><span class="feedback-inline" id="fb_sc3"></span><button class="btn-check sc-check-btn" id="sc_check_3" onclick="checkScCard(3)">採点</button></div><div class="sc-reveal" id="sc_reveal_3"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">4</span><span class="sc-sentence">何もない荒野が<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc4"></span>と広がっていた。</span><span class="feedback-inline" id="fb_sc4"></span><button class="btn-check sc-check-btn" id="sc_check_4" onclick="checkScCard(4)">採点</button></div><div class="sc-reveal" id="sc_reveal_4"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">5</span><span class="sc-sentence">机とは何かという問いは、外見だけではなく<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc5"></span>に考える必要がある。</span><span class="feedback-inline" id="fb_sc5"></span><button class="btn-check sc-check-btn" id="sc_check_5" onclick="checkScCard(5)">採点</button></div><div class="sc-reveal" id="sc_reveal_5"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">6</span><span class="sc-sentence">机を定義するには、人との<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc6"></span>的位置も重要になる。</span><span class="feedback-inline" id="fb_sc6"></span><button class="btn-check sc-check-btn" id="sc_check_6" onclick="checkScCard(6)">採点</button></div><div class="sc-reveal" id="sc_reveal_6"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">7</span><span class="sc-sentence">素材としての世界は、切れ目のない<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc7"></span>としたものだ。</span><span class="feedback-inline" id="fb_sc7"></span><button class="btn-check sc-check-btn" id="sc_check_7" onclick="checkScCard(7)">採点</button></div><div class="sc-reveal" id="sc_reveal_7"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">8</span><span class="sc-sentence">ことばは世界に<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc8"></span>の分節を与える。</span><span class="feedback-inline" id="fb_sc8"></span><button class="btn-check sc-check-btn" id="sc_check_8" onclick="checkScCard(8)">採点</button></div><div class="sc-reveal" id="sc_reveal_8"></div></div><div class="sc-card"><div class="sc-main-row"><span class="sc-num">9</span><span class="sc-sentence">世界は絶えず<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc9"></span>し、常に流動している。</span><span class="feedback-inline" id="fb_sc9"></span><button class="btn-check sc-check-btn" id="sc_check_9" onclick="checkScCard(9)">採点</button></div><div class="sc-reveal" id="sc_reveal_9"></div></div></div><div class="section-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="scScoreFill"></div></div><span class="score-num" id="scScoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-reset-all" onclick="resetAllSc()">リセット</button></div></div></div><div class="kat-wrap"><div class="section-heading">◆ 語彙：慣用表現</div><div class="section-description">意味を確認し、聖書に由来する慣用表現を書きなさい。</div><div class="mc-grid"><div class="mc-card"><div class="question-number">語句 1</div><div class="vocab-word">価値のわからない者に貴重なものを与えても無駄になるということ</div><div class="kat-answer-row"><input type="text" class="blank-input" id="blank_kat1" placeholder="慣用表現"><span class="feedback-inline" id="fb_kat1"></span></div><div class="kat-reveal" id="kat_reveal_1"></div></div><div class="mc-card"><div class="question-number">語句 2</div><div class="vocab-word">厳しい関門や競争相手の多さで、目標達成が難しいこと</div><div class="kat-answer-row"><input type="text" class="blank-input" id="blank_kat2" placeholder="慣用表現"><span class="feedback-inline" id="fb_kat2"></span></div><div class="kat-reveal" id="kat_reveal_2"></div></div><div class="mc-card"><div class="question-number">語句 3</div><div class="vocab-word">今までよくわからなかったことが、突然はっきりとわかること</div><div class="kat-answer-row"><input type="text" class="blank-input" id="blank_kat3" placeholder="慣用表現"><span class="feedback-inline" id="fb_kat3"></span></div><div class="kat-reveal" id="kat_reveal_3"></div></div></div><div class="section-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="katScoreFill"></div></div><span class="score-num" id="katScoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-check" style="font-size:14px;padding:10px 28px" onclick="checkAllKat()">すべて採点する</button><button class="btn-reset-all" onclick="resetAllKat()">リセット</button></div></div></div><div class="knj-wrap"><div class="section-heading">◆ 語彙：漢字</div><div class="section-description">① 次の漢字の読みをひらがなで書こう。</div><div class="rd-grid"><div class="rd-card"><div class="question-number">1</div><div class="rd-kanji">森羅万象</div><input type="text" class="rd-input" id="blank_rd1" placeholder="よみ"><div class="rd-fb" id="fb_rd1"></div><div class="rd-reveal" id="rd_reveal_1"></div></div><div class="rd-card"><div class="question-number">2</div><div class="rd-kanji">比喩</div><input type="text" class="rd-input" id="blank_rd2" placeholder="よみ"><div class="rd-fb" id="fb_rd2"></div><div class="rd-reveal" id="rd_reveal_2"></div></div><div class="rd-card"><div class="question-number">3</div><div class="rd-kanji">花瓶</div><input type="text" class="rd-input" id="blank_rd3" placeholder="よみ"><div class="rd-fb" id="fb_rd3"></div><div class="rd-reveal" id="rd_reveal_3"></div></div><div class="rd-card"><div class="question-number">4</div><div class="rd-kanji">椅子</div><input type="text" class="rd-input" id="blank_rd4" placeholder="よみ"><div class="rd-fb" id="fb_rd4"></div><div class="rd-reveal" id="rd_reveal_4"></div></div></div><div class="section-bottom rd-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="rdScoreFill"></div></div><span class="score-num" id="rdScoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-check" style="font-size:14px;padding:10px 28px" onclick="checkAllRd()">すべて採点する</button><button class="btn-reset-all" onclick="resetAllRd()">リセット</button></div></div><div class="section-description knj-desc" style="margin-top:32px">② 次の傍線部の片仮名を漢字で書こう。最も適切なものをクリックして選びなさい。</div><div class="mc-grid knj-grid"><div class="mc-card"><div class="question-number">1</div><div class="knj-phrase">事件解決の<span class="knj-kata">カギ</span>を握る</div><div class="choices" id="choices_knj1"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj1','ア')">ア　鍵</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj1','イ')">イ　健</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj1','ウ')">ウ　建</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj1','エ')">エ　件</button></div><div class="mc-result" id="mc_result_knj1"></div></div><div class="mc-card"><div class="question-number">2</div><div class="knj-phrase">子どもが<span class="knj-kata">スコ</span>やかに育つ</div><div class="choices" id="choices_knj2"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj2','ア')">ア　康</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj2','イ')">イ　健</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj2','ウ')">ウ　建</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj2','エ')">エ　鍵</button></div><div class="mc-result" id="mc_result_knj2"></div></div><div class="mc-card"><div class="question-number">3</div><div class="knj-phrase"><span class="knj-kata">アミ</span>目模様の着物</div><div class="choices" id="choices_knj3"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj3','ア')">ア　綱</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj3','イ')">イ　網</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj3','ウ')">ウ　縄</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj3','エ')">エ　紐</button></div><div class="mc-result" id="mc_result_knj3"></div></div><div class="mc-card"><div class="question-number">4</div><div class="knj-phrase">頼みの<span class="knj-kata">ツナ</span>が切れる</div><div class="choices" id="choices_knj4"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj4','ア')">ア　綱</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj4','イ')">イ　網</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj4','ウ')">ウ　縄</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj4','エ')">エ　糸</button></div><div class="mc-result" id="mc_result_knj4"></div></div><div class="mc-card"><div class="question-number">5</div><div class="knj-phrase">農業の<span class="knj-kata">ニナ</span>い手を育てる</div><div class="choices" id="choices_knj5"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj5','ア')">ア　任</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj5','イ')">イ　担</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj5','ウ')">ウ　荷</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj5','エ')">エ　負</button></div><div class="mc-result" id="mc_result_knj5"></div></div><div class="mc-card"><div class="question-number">6</div><div class="knj-phrase"><span class="knj-kata">タダ</span>し書きに注意する</div><div class="choices" id="choices_knj6"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj6','ア')">ア　但</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj6','イ')">イ　正</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj6','ウ')">ウ　唯</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj6','エ')">エ　忠</button></div><div class="mc-result" id="mc_result_knj6"></div></div><div class="mc-card"><div class="question-number">7</div><div class="knj-phrase">壁にポスターを<span class="knj-kata">はる</span></div><div class="choices" id="choices_knj7"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj7','ア')">ア　張る</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj7','イ')">イ　貼る</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj7','ウ')">ウ　晴る</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj7','エ')">エ　播る</button></div><div class="mc-result" id="mc_result_knj7"></div></div><div class="mc-card"><div class="question-number">8</div><div class="knj-phrase">大地に根を<span class="knj-kata">はる</span></div><div class="choices" id="choices_knj8"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj8','ア')">ア　貼る</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj8','イ')">イ　張る</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj8','ウ')">ウ　晴る</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj8','エ')">エ　治る</button></div><div class="mc-result" id="mc_result_knj8"></div></div><div class="mc-card"><div class="question-number">9</div><div class="knj-phrase">要点を<span class="knj-kata">とらえる</span></div><div class="choices" id="choices_knj9"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj9','ア')">ア　捕らえる</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj9','イ')">イ　捉える</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj9','ウ')">ウ　執える</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj9','エ')">エ　採える</button></div><div class="mc-result" id="mc_result_knj9"></div></div><div class="mc-card"><div class="question-number">10</div><div class="knj-phrase">犯人を<span class="knj-kata">とらえる</span></div><div class="choices" id="choices_knj10"><button class="choice-btn" data-choice="ア" onclick="selectKnj('knj10','ア')">ア　捉える</button>
+<button class="choice-btn" data-choice="イ" onclick="selectKnj('knj10','イ')">イ　捕らえる</button>
+<button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj10','ウ')">ウ　採える</button>
+<button class="choice-btn" data-choice="エ" onclick="selectKnj('knj10','エ')">エ　執える</button></div><div class="mc-result" id="mc_result_knj10"></div></div></div><div class="section-bottom knj-bottom"><div class="score-bar"><span class="score-label">正答率</span><div class="score-track"><div class="score-fill" id="knjScoreFill"></div></div><span class="score-num" id="knjScoreNum">— / —</span></div><div class="all-btn-row"><button class="btn-reset-all" onclick="resetAllKnj()">リセット</button></div></div></div><button id="study-btn" onclick="openStudyGuide()">📖 復習資料<br>を出力</button><script>const answers={blank1_1:{type:"exact",values:["対象"]},blank1_2:{type:"exact",values:["関係"]},blank1_3:{type:"exact",values:["適切なことば","適切な言葉"]},blank2_1:{type:"exact",values:["あらしめて"]},blank2_2:{type:"exact",values:["レッテル"]},blank2_3:{type:"exact",values:["違ったもの"]},blank3_1:{type:"exact",values:["唯一の窓口"]},blank3_2:{type:"exact",values:["認識の焦点"]},blank4_1:{type:"exact",values:["虚構"]},blank4_2:{type:"exact",values:["整然"]},blank4_3:{type:"exact",values:["虚構性"]}};const cardBlanks={1:["blank1_1","blank1_2","blank1_3"],2:["blank2_1","blank2_2","blank2_3"],3:["blank3_1","blank3_2"],4:["blank4_1","blank4_2","blank4_3"]};const scAnswers={blank_sc1:["多岐"],blank_sc2:["森羅万象"],blank_sc3:["あらしめ","あらしめて"],blank_sc4:["空々漠々"],blank_sc5:["抽象的"],blank_sc6:["相対"],blank_sc7:["渾沌","混沌"],blank_sc8:["虚構"],blank_sc9:["生成"]};const mcAnswers={mc1:"イ",mc2:"ウ",mc3:"ア",mc4:"ア",mc5:"イ",mc6:"イ",mc7:"ア",mc8:"イ",mc9:"ア"};function normalize(s) {
+    return s.trim().replace(/\s+/g,"").replace(/（/g,"(").replace(/）/g,")");
+  }
+
+  // ─── 読解穴埋め ────────────────────────────────────────────────
+  function checkBlank(id) {
+    const input=document.getElementById(id);
+    const fb=document.getElementById("fb"+id.replace("blank",""));
+    const ans=answers[id], val=input.value;
+    if (!val.trim()) { input.classList.remove("correct","wrong"); fb.style.display="none"; return null; }
+    let result;
+    if (ans.type==="example") {
+      result=true; input.classList.remove("wrong"); input.classList.add("correct");
+      fb.className="feedback-inline correct"; fb.textContent="記入済"; fb.style.display="inline";
+    } else {
+      result=ans.values.some(v=>normalize(v)===normalize(val));
+      input.classList.remove("correct","wrong"); input.classList.add(result?"correct":"wrong");
+      fb.className="feedback-inline "+(result?"correct":"wrong");
+      fb.textContent=result?"○":"×"; fb.style.display="inline";
+    }
+    return result;
+  }
+  function checkCard(n)  { cardBlanks[n].forEach(id=>checkBlank(id)); updateScore(); }
+  function resetCard(n)  {
+    cardBlanks[n].forEach(id=>{
+      const i=document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+      const f=document.getElementById("fb"+id.replace("blank","")); if(f) f.style.display="none";
+    });
+    document.getElementById("hint"+n).style.display="none"; updateScore();
+  }
+  function showAnswer(n) { const h=document.getElementById("hint"+n); h.style.display=h.style.display==="block"?"none":"block"; }
+  function resetAll()    { for(let n=1;n<=4;n++) resetCard(n); }
+  function updateScore() {
+    const all=Object.keys(answers); let t=0,c=0;
+    all.forEach(id=>{
+      const v=document.getElementById(id).value.trim(); if(!v) return; t++;
+      const a=answers[id];
+      if(a.type==="example") c++;
+      else if(a.values.some(v2=>normalize(v2)===normalize(v))) c++;
+    });
+    const fill=document.getElementById("scoreFill"),num=document.getElementById("scoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/all.length*100)+"%";
+    num.textContent=c+" / "+all.length+" 問正解";
+  }
+
+  // ─── 短文穴埋め ───────────────────────────────────────────────
+  function checkScBlank(id) {
+    const input=document.getElementById(id);
+    const fb=document.getElementById("fb"+id.replace("blank",""));
+    const vals=scAnswers[id], val=input.value;
+    if (!val.trim()) { input.classList.remove("correct","wrong"); fb.style.display="none"; return null; }
+    const result=vals.some(v=>normalize(v)===normalize(val));
+    input.classList.remove("correct","wrong"); input.classList.add(result?"correct":"wrong");
+    fb.className="feedback-inline"; void fb.offsetWidth;
+    fb.className="feedback-inline "+(result?"correct":"wrong");
+    fb.textContent=result?"✓ 正解！":"×"; fb.style.display="inline";
+    return result;
+  }
+  function checkScCard(n) {
+    const id="blank_sc"+n;
+    const result=checkScBlank(id);
+    const reveal=document.getElementById("sc_reveal_"+n);
+    if (result===false) { reveal.textContent="正解: "+scAnswers[id][0]; reveal.style.display="block"; }
+    else               { reveal.style.display="none"; }
+    updateScScore();
+  }
+  function resetScCard(n) {
+    const id="blank_sc"+n;
+    const i=document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+    const f=document.getElementById("fb_sc"+n); if(f) f.style.display="none";
+    const r=document.getElementById("sc_reveal_"+n); if(r) r.style.display="none";
+    updateScScore();
+  }
+  function resetAllSc() { for(let n=1;n<=9;n++) resetScCard(n); }
+  function updateScScore() {
+    const ids=Object.keys(scAnswers); let t=0,c=0;
+    ids.forEach(id=>{
+      const v=document.getElementById(id).value.trim(); if(!v) return; t++;
+      if(scAnswers[id].some(v2=>normalize(v2)===normalize(v))) c++;
+    });
+    const fill=document.getElementById("scScoreFill"),num=document.getElementById("scScoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/ids.length*100)+"%";
+    num.textContent=c+" / "+ids.length+" 問正解";
+  }
+
+  // ─── 4択：クリックで即採点 ────────────────────────────────────
+  function selectMc(qid, choice) {
+    const choicesEl=document.getElementById("choices_"+qid);
+    if (choicesEl.classList.contains("graded")) return;
+    const correct=mcAnswers[qid];
+    choicesEl.querySelectorAll(".choice-btn").forEach(btn=>{
+      btn.classList.remove("selected","correct","wrong","reveal-correct");
+      const c=btn.dataset.choice;
+      if      (c===correct && c===choice) btn.classList.add("correct");
+      else if (c===choice)                btn.classList.add("wrong");
+      else if (c===correct)               btn.classList.add("reveal-correct");
+    });
+    choicesEl.classList.add("graded");
+    const resultEl=document.getElementById("mc_result_"+qid);
+    resultEl.textContent = choice===correct ? "✓ 正解！" : "✗ 不正解";
+    resultEl.className   = "mc-result " + (choice===correct ? "correct" : "wrong");
+    updateMcScore();
+  }
+  function resetAllMc() {
+    Object.keys(mcAnswers).forEach(qid=>{
+      const el=document.getElementById("choices_"+qid);
+      el.classList.remove("graded");
+      el.querySelectorAll(".choice-btn").forEach(b=>b.classList.remove("selected","correct","wrong","reveal-correct"));
+      const r=document.getElementById("mc_result_"+qid);
+      r.className="mc-result"; r.textContent="";
+    });
+    updateMcScore();
+  }
+  function updateMcScore() {
+    let t=0,c=0;
+    Object.keys(mcAnswers).forEach(qid=>{
+      document.querySelectorAll("#choices_"+qid+" .choice-btn").forEach(b=>{
+        if(b.classList.contains("correct")){t++;c++;}
+        else if(b.classList.contains("wrong")){t++;}
+      });
+    });
+    const fill=document.getElementById("mcScoreFill"),num=document.getElementById("mcScoreNum");
+    const max=Object.keys(mcAnswers).length;
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/max*100)+"%";
+    num.textContent=c+" / "+max+" 問正解";
+  }const katAnswers={blank_kat1:["豚に真珠"],blank_kat2:["狭き門"],blank_kat3:["目から鱗が落ちる","目からうろこが落ちる","目から鱗"]};function checkKatBlank(id) {
+    const input = document.getElementById(id);
+    const n = id.replace("blank_kat","");
+    const fb = document.getElementById("fb_kat"+n);
+    const reveal = document.getElementById("kat_reveal_"+n);
+    const vals = katAnswers[id], val = input.value;
+    if (!val.trim()) {
+      input.classList.remove("correct","wrong"); fb.style.display="none";
+      if(reveal) reveal.style.display="none"; return null;
+    }
+    const result = vals.some(v => normalize(v)===normalize(val));
+    input.classList.remove("correct","wrong"); input.classList.add(result?"correct":"wrong");
+    fb.className = "feedback-inline "+(result?"correct":"wrong");
+    fb.textContent = result ? "✓ 正解！" : "×"; fb.style.display="inline";
+    if (!result) { reveal.textContent="正解: "+vals.join("／"); reveal.style.display="block"; }
+    else { reveal.style.display="none"; }
+    updateKatScore(); return result;
+  }
+  function checkAllKat() { Object.keys(katAnswers).forEach(id => checkKatBlank(id)); }
+  function resetAllKat() {
+    Object.keys(katAnswers).forEach(id => {
+      const n = id.replace("blank_kat","");
+      const i = document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+      const f = document.getElementById("fb_kat"+n); if(f) f.style.display="none";
+      const r = document.getElementById("kat_reveal_"+n); if(r) r.style.display="none";
+    });
+    updateKatScore();
+  }
+  function updateKatScore() {
+    const ids = Object.keys(katAnswers); let t=0, c=0;
+    ids.forEach(id => {
+      const v = document.getElementById(id).value.trim(); if(!v) return; t++;
+      if(katAnswers[id].some(v2 => normalize(v2)===normalize(v))) c++;
+    });
+    const fill = document.getElementById("katScoreFill"), num = document.getElementById("katScoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width = Math.round(c/ids.length*100)+"%";
+    num.textContent = c+" / "+ids.length+" 問正解";
+  }const rdAnswers={blank_rd1:["しんらばんしょう"],blank_rd2:["ひゆ"],blank_rd3:["かびん"],blank_rd4:["いす"]};function checkRdBlank(id) {
+    const input = document.getElementById(id);
+    const n = id.replace("blank_rd","");
+    const fb = document.getElementById("fb_rd"+n);
+    const reveal = document.getElementById("rd_reveal_"+n);
+    const vals = rdAnswers[id], val = input.value;
+    if (!val.trim()) {
+      input.classList.remove("correct","wrong");
+      fb.className = "rd-fb"; fb.textContent = "";
+      if(reveal) reveal.style.display = "none";
+      return null;
+    }
+    const result = vals.some(v => normalize(v) === normalize(val));
+    input.classList.remove("correct","wrong");
+    input.classList.add(result ? "correct" : "wrong");
+    fb.className = "rd-fb "+(result ? "correct" : "wrong");
+    fb.textContent = result ? "✓ 正解！" : "×";
+    if (!result) { reveal.textContent = "正解: "+vals[0]; reveal.style.display = "block"; }
+    else { reveal.style.display = "none"; }
+    updateRdScore();
+    return result;
+  }
+  function checkAllRd() { Object.keys(rdAnswers).forEach(id => checkRdBlank(id)); }
+  function resetAllRd() {
+    Object.keys(rdAnswers).forEach(id => {
+      const n = id.replace("blank_rd","");
+      const i = document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+      const f = document.getElementById("fb_rd"+n); if(f){ f.className="rd-fb"; f.textContent=""; }
+      const r = document.getElementById("rd_reveal_"+n); if(r) r.style.display="none";
+    });
+    updateRdScore();
+  }
+  function updateRdScore() {
+    const ids = Object.keys(rdAnswers); let t=0, c=0;
+    ids.forEach(id => {
+      const v = document.getElementById(id).value.trim(); if(!v) return; t++;
+      if(rdAnswers[id].some(v2 => normalize(v2)===normalize(v))) c++;
+    });
+    const fill = document.getElementById("rdScoreFill"), num = document.getElementById("rdScoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width = Math.round(c/ids.length*100)+"%";
+    num.textContent = c+" / "+ids.length+" 問正解";
+  }const knjAnswers={knj1:"ア",knj2:"イ",knj3:"イ",knj4:"ア",knj5:"イ",knj6:"ア",knj7:"イ",knj8:"イ",knj9:"イ",knj10:"イ"};function selectKnj(qid, choice) {
+    const choicesEl = document.getElementById("choices_"+qid);
+    if (choicesEl.classList.contains("graded")) return;
+    const correct = knjAnswers[qid];
+    choicesEl.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.classList.remove("selected","correct","wrong","reveal-correct");
+      const c = btn.dataset.choice;
+      if      (c===correct && c===choice) btn.classList.add("correct");
+      else if (c===choice)                btn.classList.add("wrong");
+      else if (c===correct)               btn.classList.add("reveal-correct");
+    });
+    choicesEl.classList.add("graded");
+    const resultEl = document.getElementById("mc_result_"+qid);
+    resultEl.textContent = choice===correct ? "✓ 正解！" : "✗ 不正解";
+    resultEl.className   = "mc-result " + (choice===correct ? "correct" : "wrong");
+    updateKnjScore();
+  }
+  function resetAllKnj() {
+    Object.keys(knjAnswers).forEach(qid => {
+      const el = document.getElementById("choices_"+qid);
+      el.classList.remove("graded");
+      el.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("selected","correct","wrong","reveal-correct"));
+      const r = document.getElementById("mc_result_"+qid);
+      r.className = "mc-result"; r.textContent = "";
+    });
+    updateKnjScore();
+  }
+  function updateKnjScore() {
+    let t=0, c=0;
+    Object.keys(knjAnswers).forEach(qid => {
+      document.querySelectorAll("#choices_"+qid+" .choice-btn").forEach(b => {
+        if(b.classList.contains("correct")){t++;c++;}
+        else if(b.classList.contains("wrong")){t++;}
+      });
+    });
+    const fill = document.getElementById("knjScoreFill"), num = document.getElementById("knjScoreNum");
+    const max = Object.keys(knjAnswers).length;
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width = Math.round(c/max*100)+"%";
+    num.textContent = c+" / "+max+" 問正解";
+  }function openStudyGuide(){const vocab=[{w:'多岐',m:'（その事柄が）いろいろな面に関係があり、解決・処理が簡単にはできないこと。',e:'この研究所では多岐にわたる研究を行っている。'},{w:'森羅万象',m:'宇宙間に存在する一切のもの。目に見え、耳に聞こえ、鼻でかぎ、手で触れ得るものすべて。',e:'森羅万象に共通する法則を見いだす。'},{w:'あらしめる',m:'ある形や様相をもって存在させる。',e:'日々の努力が、今日の発展をあらしめた。'},{w:'空々漠々',m:'一面に何も無く広々としている様子。ぼんやりして、とらえどころの無い様子。',e:'空々漠々とした物思いにふける。'},{w:'抽象的',m:'同類のもの一般を、頭の中で取り出して考える様子。',e:'データを準備できなかったために、抽象的な説明をせざるをえなかった。'},{w:'相対',m:'他と関連させてみて、初めてそのものの存在が考えられること。',e:'物事をいつも相対的に考える。'},{w:'渾沌',m:'同程度の力のものが互いにしのぎをけずっていて、形勢がどう変わるか見通しの立たない様子。',e:'議長不在で話し合ったが、議論は渾沌として進まない。'},{w:'虚構',m:'事実ではないことを事実のようにつくること。',e:'彼の話した内容は、全て虚構だったことがわかった。'},{w:'生成',m:'物としての形が現れる、または形を現すこと。',e:'実験で新しい化合物を生成する。'}];const vocabHTML=vocab.map(v=>`<div class="vi"><div class="vw">${v.w}</div><div class="vm">${v.m}</div><div class="ve">${v.e}</div></div>`).join('');const html=`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><title>ものとことば｜復習資料</title><style>*{box-sizing:border-box;margin:0;padding:0}html{writing-mode:vertical-rl;text-orientation:mixed;overflow-x:hidden}body{font-family:"Hiragino Mincho ProN","Yu Mincho","MS Mincho",serif;color:#1a1a2e;padding:12mm 14mm;font-size:25px;line-height:2.0;background:#fff;display:flex;flex-direction:row;gap:3em}.pbtn-wrap{writing-mode:horizontal-tb;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}.pbtn{font-family:sans-serif;font-size:14px;font-weight:bold;background:#2c5f8a;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer}.pbtn-back{background:#e4e9ef;color:#444}.dh{text-align:center;border-left:2px solid #ccd6e0;padding-left:12px;margin-left:10px}.dh h1{font-size:32px;color:#2c5f8a;font-weight:bold;margin-bottom:6px}.sec{margin-left:2em}.stitle{font-family:"Hiragino Kaku Gothic ProN",sans-serif;font-size:24px;font-weight:bold;color:#fff;background:#2c5f8a;padding:3px 10px;border-radius:3px;display:inline-block;margin-bottom:1.2em}.ri{margin-bottom:1.6em;break-inside:avoid}.rlabel{font-family:"Hiragino Kaku Gothic ProN",sans-serif;font-size:20px;font-weight:bold;color:#2c5f8a;background:#e8f2f9;display:inline-block;padding:1px 7px;border-radius:8px;margin-bottom:.6em}.rbody{font-size:25px;line-height:2.2;border-right:3px solid #2c5f8a;padding:6px 10px;background:#fafbfd}.ans{font-weight:bold;color:#2c5f8a;text-decoration:underline;text-underline-offset:3px}.reading-sec,.vocab-sec{flex-shrink:0;width:100%}.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.vi{break-inside:avoid;border:1px solid #ccd6e0;border-radius:5px;padding:8px 10px;margin-bottom:10px}.vw{font-size:34px;font-weight:bold;color:#1a1a2e;margin-bottom:5px}.vm{font-size:23px;line-height:1.8;color:#1a1a2e;margin-bottom:5px}.ve{font-size:22px;color:#555;border-top:1px dashed #ccc;padding-top:4px;line-height:1.8}.ve::before{content:"例　";font-size:20px;font-weight:bold;color:#2c5f8a;font-family:sans-serif}</style></head><body><div class="sec reading-sec"><div class="dh"><h1>ものとことば</h1><p>鈴木孝夫</p></div><span class="stitle">◆ 読解まとめ</span><div class="ri"><span class="rlabel">一般的な考え方</span><div class="rbody">ものとは事物や<span class="ans">対象</span>であり、こととは事物の動き・性質・<span class="ans">関係</span>などである。これらを表す<span class="ans">適切なことば</span>が対応している。</div></div><div class="ri"><span class="rlabel">筆者の見方</span><div class="rbody">ことばがものを<span class="ans">あらしめて</span>いる。名称の違いは単なる<span class="ans">レッテル</span>の相違ではなく、かなり<span class="ans">違ったもの</span>を提示している。</div></div><div class="ri"><span class="rlabel">言語の虚構性</span><div class="rbody">ことばは素材の世界に<span class="ans">虚構</span>の分節を与え、世界を<span class="ans">整然</span>と区分された集合であるかのように提示する。</div></div></div><div class="sec vocab-sec"><span class="stitle">◆ 語彙まとめ</span><div class="vgrid">${vocabHTML}</div></div><div class="pbtn-wrap"><button class="pbtn pbtn-back" onclick="window.close()">← 演習に戻る</button><button class="pbtn" onclick="window.print()">PDFに保存</button></div></body></html>`;const win=window.open('','_blank');if(!win){alert('ポップアップがブロックされました。許可してから再度お試しください。');return;}win.document.write(html);win.document.close();}(function(){const group=document.querySelector(".vocab-group");if(!group)return;const words=[...group.querySelectorAll(".vg-word")];for(let i=words.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[words[i],words[j]]=[words[j],words[i]];}words.forEach(w=>group.appendChild(w));})();document.querySelectorAll(".blank-input").forEach(input=>{input.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const id=input.id;const mSc=id.match(/blank_sc(\d+)/);if(mSc){e.preventDefault();const btn=document.getElementById("sc_check_"+mSc[1]);if(btn)btn.focus();return;}const mKat=id.match(/blank_kat(\d+)/);if(mKat){e.preventDefault();checkKatBlank(id);return;}const mRd=id.match(/blank(\d+)_/);if(mRd)checkCard(parseInt(mRd[1]));});});document.querySelectorAll(".rd-input").forEach(input=>{input.addEventListener("keydown",e=>{if(e.key!=="Enter")return;e.preventDefault();checkRdBlank(input.id);});});</script></body></html>
