@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贈り物と商品の違い｜語彙・読解学習</title>
+  <style>
+    :root {
+      --primary: #2c5f8a;
+      --primary-light: #e8f2f9;
+      --accent: #d4670a;
+      --correct: #2a7a3a;
+      --correct-bg: #e8f5ea;
+      --wrong: #b02020;
+      --wrong-bg: #fdecea;
+      --hint-bg: #fff8e6;
+      --border: #ccd6e0;
+      --text: #1a1a2e;
+      --muted: #666;
+      --card-bg: #ffffff;
+      --page-bg: #f4f7fb;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", Georgia, serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 16px 60px;
+    }
+
+    /* header */
+    header { max-width: 760px; margin: 0 auto 28px; text-align: center; }
+    header .subtitle { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; }
+    header h1 { font-size: clamp(18px,4vw,26px); font-weight: bold; color: var(--primary); line-height: 1.4; margin-bottom: 4px; }
+    header .author { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+    .goal-box { display: inline-block; background: var(--primary-light); border-left: 4px solid var(--primary); border-radius: 4px; padding: 8px 16px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--primary); }
+    .goal-box .label { font-weight: bold; margin-right: 6px; }
+
+    /* section heading */
+    .section-heading { max-width: 760px; margin: 44px auto 20px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 17px; font-weight: bold; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 8px; }
+    .section-description { max-width: 760px; margin: -12px auto 16px; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--muted); }
+
+    /* buttons */
+    button { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; font-weight: bold; border: none; border-radius: 6px; padding: 9px 20px; cursor: pointer; transition: opacity .15s, transform .1s; }
+    button:active { transform: scale(.97); }
+    .btn-check { background: var(--primary); color: #fff; }
+    .btn-check:hover { opacity: .88; }
+    .btn-reset { background: #e4e9ef; color: #444; }
+    .btn-reset:hover { opacity: .8; }
+    .btn-show-answer { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+    .btn-show-answer:hover { background: #fff4ec; }
+    .btn-reset-all { background: #e4e9ef; color: #444; font-size: 14px; padding: 10px 20px; }
+
+    /* score bar / btn row */
+    .all-btn-row { max-width: 760px; margin: 0 auto 8px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .score-bar   { max-width: 760px; margin: 0 auto 0; background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 18px 24px; display: flex; align-items: center; gap: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .score-label { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .score-track { flex: 1; height: 10px; background: #e0e8f0; border-radius: 99px; overflow: hidden; }
+    .score-fill  { height: 100%; background: linear-gradient(90deg, var(--primary), var(--correct)); border-radius: 99px; width: 0%; transition: width .5s ease; }
+    .score-num   { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 15px; font-weight: bold; color: var(--primary); white-space: nowrap; min-width: 60px; text-align: right; }
+
+    /* section bottom */
+    .section-bottom { margin-top: 16px; }
+    .section-bottom .score-bar   { margin-bottom: 10px; }
+    .section-bottom .all-btn-row { margin-top: 0; margin-bottom: 0; }
+
+    /* reading cards */
+    main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .question-number { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; font-weight: bold; color: var(--primary); background: var(--primary-light); display: inline-block; padding: 2px 10px; border-radius: 20px; margin-bottom: 10px; }
+    .question-text { font-size: 15px; line-height: 1.9; margin-bottom: 16px; }
+    .question-sentence { font-size: 15px; line-height: 2.6; background: #fafbfd; border: 1px solid #dde5ee; border-radius: 6px; padding: 14px 18px; margin-bottom: 16px; }
+    .bullet-item { display: flex; align-items: baseline; gap: 4px; margin-bottom: 4px; }
+    .bullet-item .bullet-mark { flex-shrink: 0; }
+    .eq-line { margin-top: 8px; padding-left: 1em; }
+    .btn-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .hint-box { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; background: var(--hint-bg); border: 1px dashed #e0b84a; border-radius: 6px; padding: 10px 14px; margin-top: 10px; line-height: 1.9; }
+    .hint-box .hint-label { font-weight: bold; color: var(--accent); margin-right: 6px; }
+
+    /* blanks */
+    .blank-wrap  { display: inline-flex; align-items: baseline; vertical-align: middle; margin: 0 4px; }
+    .blank-input { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 15px; border: none; border-bottom: 2px solid var(--primary); background: transparent; text-align: center; outline: none; padding: 2px 6px; min-width: 60px; max-width: 380px; width: 160px; color: var(--text); transition: border-color .2s, background .2s; }
+    .blank-input.wide   { width: 260px; }
+    .blank-input.xwide  { width: 340px; }
+    .blank-input.narrow { width: 90px; }
+    .blank-input:focus  { border-bottom-color: var(--accent); background: #fff8f0; }
+    .blank-input.correct { border-bottom-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+    .blank-input.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+
+    /* feedback inline */
+    .feedback-inline { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 13px; font-weight: bold; margin-left: 4px; }
+    .feedback-inline.correct { color: var(--correct); }
+    .feedback-inline.wrong   { color: var(--wrong); }
+    @keyframes correctPop {
+      0%  { opacity:0; transform:scale(.6); }
+      65% { opacity:1; transform:scale(1.3); }
+      100%{ opacity:1; transform:scale(1); }
+    }
+    .feedback-inline.correct { animation: correctPop .35s ease forwards; }
+
+    /* MC section */
+    .mc-wrap .section-heading,
+    .mc-wrap .section-description,
+    .mc-wrap .section-bottom .all-btn-row,
+    .mc-wrap .section-bottom .score-bar { max-width: 1200px; }
+
+    .mc-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 980px) { .mc-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px) { .mc-grid { grid-template-columns: 1fr; } }
+
+    .mc-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .vocab-word {
+      font-size: 51px;
+      font-weight: bold;
+      color: var(--text);
+      text-align: center;
+      margin: 6px 0 16px;
+      letter-spacing: .05em;
+      line-height: 1.2;
+    }
+
+    .choices { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .choice-btn {
+      font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+      font-size: 13px;
+      font-weight: normal;
+      background: #f4f7fb;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.6;
+      transition: background .12s, border-color .12s;
+    }
+    .choice-btn:hover:not(.correct):not(.wrong):not(.reveal-correct) { background: var(--primary-light); border-color: var(--primary); }
+    .choice-btn.correct       { background: var(--correct-bg); border-left: 4px solid var(--correct); color: var(--correct); font-weight: bold; }
+    .choice-btn.correct::before { content: "✓ "; }
+    .choice-btn.wrong         { background: var(--wrong-bg); border-left: 4px solid var(--wrong); color: var(--wrong); }
+    .choice-btn.wrong::before { content: "✗ "; }
+    .choice-btn.reveal-correct { background: var(--correct-bg); border-left: 4px solid var(--correct); color: var(--correct); }
+    .choice-btn.reveal-correct::before { content: ""; }
+    .choices.graded .choice-btn { cursor: default; pointer-events: none; }
+
+    .mc-result {
+      font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+    .mc-result.correct {
+      display: block;
+      background: var(--correct-bg);
+      border: 1px solid var(--correct);
+      color: var(--correct);
+      animation: correctPop .35s ease forwards;
+    }
+    .mc-result.wrong {
+      display: block;
+      background: var(--wrong-bg);
+      border: 1px solid var(--wrong);
+      color: var(--wrong);
+    }
+
+    /* SC section */
+    .sc-wrap .section-heading,
+    .sc-wrap .section-description,
+    .sc-wrap .vocab-group,
+    .sc-wrap .section-bottom .all-btn-row,
+    .sc-wrap .section-bottom .score-bar { max-width: 1100px; }
+
+    .vocab-group {
+      max-width: 1100px;
+      margin: 0 auto 16px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+    .vg-label { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; font-weight: bold; color: var(--muted); white-space: nowrap; margin-right: 4px; }
+    .vg-word  { font-family: "Hiragino Mincho ProN", "Yu Mincho", serif; font-size: 14px; background: var(--primary-light); color: var(--primary); border: 1px solid #b0c8e0; border-radius: 4px; padding: 2px 10px; }
+
+    .sc-grid { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 5px; }
+
+    .sc-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; }
+    .sc-main-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+    .sc-num { font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 11px; font-weight: bold; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .sc-sentence { flex: 1; min-width: 0; font-size: 15px; line-height: 2.4; }
+    .sc-main-row .feedback-inline { flex-shrink: 0; white-space: nowrap; margin-left: 2px; }
+    .sc-check-btn { flex-shrink: 0; padding: 6px 14px; font-size: 12px; }
+    .sc-reveal { display: none; font-family: "Hiragino Kaku Gothic ProN", sans-serif; font-size: 12px; color: var(--wrong); padding: 2px 4px 3px 48px; line-height: 1.4; }
+
+    @media (max-width: 520px) {
+      .blank-input { width: 120px; } .blank-input.wide { width: 200px; } .blank-input.xwide { width: 250px; }
+      .vocab-word { font-size: 36px; } .choice-btn { font-size: 12px; }
+      .sc-main-row { flex-wrap: wrap; }
+    }
+
+    /* knj-wrap */
+    .knj-wrap .section-heading { max-width: 1200px; }
+    .knj-desc { max-width: 1200px; }
+    .knj-bottom .score-bar,
+    .knj-bottom .all-btn-row { max-width: 1200px; }
+
+    /* rd-grid */
+    .rd-grid { max-width: 760px; margin: 0 auto; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    @media (max-width: 600px) { .rd-grid { grid-template-columns: repeat(2,1fr); } }
+    .rd-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 12px 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .rd-kanji { font-size: 40px; font-weight: bold; margin: 4px 0 10px; }
+    .rd-input { font-family: "Hiragino Mincho ProN","Yu Mincho",serif; font-size: 16px; border: none; border-bottom: 2px solid var(--primary); background: transparent; text-align: center; outline: none; padding: 2px 4px; width: 100%; max-width: 110px; color: var(--text); transition: border-color .2s, background .2s; }
+    .rd-input:focus   { border-bottom-color: var(--accent); background: #fff8f0; }
+    .rd-input.correct { border-bottom-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+    .rd-input.wrong   { border-bottom-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+    .rd-fb { font-family: "Hiragino Kaku Gothic ProN",sans-serif; font-size: 12px; font-weight: bold; margin-top: 4px; min-height: 16px; }
+    .rd-fb.correct { color: var(--correct); }
+    .rd-fb.wrong   { color: var(--wrong); }
+    .rd-reveal { display: none; font-family: "Hiragino Kaku Gothic ProN",sans-serif; font-size: 12px; color: var(--wrong); margin-top: 3px; }
+
+    /* knj-phrase */
+    .knj-phrase { font-size: 20px; text-align: center; margin: 6px 0 14px; line-height: 1.6; }
+    .knj-kata   { color: var(--wrong); font-weight: bold; text-decoration: underline; text-underline-offset: 3px; }
+
+    /* 復習資料ボタン（固定） */
+    #study-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      box-shadow: 0 4px 16px rgba(0,0,0,.22);
+      z-index: 200;
+      cursor: pointer;
+      border: none;
+      line-height: 1.4;
+      text-align: center;
+    }
+    #study-btn:hover { opacity: .88; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="subtitle">現代国語　経済から世界を捉える ◇⑤</div>
+  <h1>贈り物と商品の違い</h1>
+  <div class="author">松村圭一郎</div>
+  <div class="goal-box"><span class="label">学習目標</span>商品交換と贈与を分ける「時間」や「印」の働きを理解し、経済／非経済という区別が持つ社会的な意味を捉えたうえで、関連語彙を身につける。</div>
+</header>
+
+
+<!-- ═══ セクション①　読解穴埋め ═══ -->
+<div class="section-heading">◆ 読解穴埋め</div>
+<main>
+
+  <div class="card">
+    <div class="question-number">問１</div>
+    <div class="question-text">商品交換と贈与を区別しているものについて、フランスの社会学者ピエール・ブルデュの指摘を空欄に入れよう。</div>
+    <div class="question-sentence">
+      商品交換と贈与を区別しているのは、モノのやりとりの間に差しはさまれた「<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank1_1" placeholder="①"></span><span class="feedback-inline" id="fb1_1"></span>」である。
+    </div>
+    <div class="hint-box" id="hint1"><span class="hint-label">答え</span>① 時間</div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(1)">採点</button>
+      <button class="btn-reset" onclick="resetCard(1)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(1)">答えを見る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="question-number">問２</div>
+    <div class="question-text">商品と贈り物を分けている外的な表示を、本文からすべて抜き出そう。</div>
+    <div class="question-sentence">
+      それはチョコレートを購入することと、プレゼントとして贈ることが、なんらかの外的な表示（<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank2_1" placeholder="①"></span><span class="feedback-inline" id="fb2_1"></span>、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank2_2" placeholder="②"></span><span class="feedback-inline" id="fb2_2"></span>、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank2_3" placeholder="③"></span><span class="feedback-inline" id="fb2_3"></span>、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank2_4" placeholder="④"></span><span class="feedback-inline" id="fb2_4"></span>）でしか区別できないことを示している。
+    </div>
+    <div class="hint-box" id="hint2"><span class="hint-label">答え</span>① 時間差　② 値札　③ リボン　④ 包装</div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(2)">採点</button>
+      <button class="btn-reset" onclick="resetCard(2)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(2)">答えを見る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="question-number">問３</div>
+    <div class="question-text">経済と非経済の区別が果たしている役割を空欄に入れよう。</div>
+    <div class="question-sentence">
+      経済と非経済との区別は、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank3_1" placeholder="①"></span><span class="feedback-inline" id="fb3_1"></span>や<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank3_2" placeholder="②"></span><span class="feedback-inline" id="fb3_2"></span>をモノのやりとりに付加したり、除去したりするための装置である。
+    </div>
+    <div class="hint-box" id="hint3"><span class="hint-label">答え</span>① 思い　② 感情（順不同）</div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(3)">採点</button>
+      <button class="btn-reset" onclick="resetCard(3)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(3)">答えを見る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="question-number">問４</div>
+    <div class="question-text">商品交換の関係が抑圧してしまうものを空欄に入れよう。</div>
+    <div class="question-sentence">
+      商品交換は、やりとりの関係を一回で完結・精算させる。この交換の関係は、コミュニケーションの基盤となる「<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank4_1" placeholder="①"></span><span class="feedback-inline" id="fb4_1"></span>」を抑圧する。
+    </div>
+    <div class="hint-box" id="hint4"><span class="hint-label">答え</span>① 共感</div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(4)">採点</button>
+      <button class="btn-reset" onclick="resetCard(4)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(4)">答えを見る</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="question-number">問５</div>
+    <div class="question-text">人間が進化の過程で獲得した身体的特徴と、その意味を空欄に入れよう。</div>
+    <div class="question-sentence">
+      人間は進化の過程で、あえて<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank5_1" placeholder="①"></span><span class="feedback-inline" id="fb5_1"></span>の部分を大きくし、瞳の動きを相手にさらすことを選んだ。そうして互いに感情を示し合い、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank5_2" placeholder="②"></span><span class="feedback-inline" id="fb5_2"></span>が生じる可能性を身体的に保証した。
+    </div>
+    <div class="hint-box" id="hint5"><span class="hint-label">答え</span>① 白目　② 共感</div>
+    <div class="btn-row">
+      <button class="btn-check" onclick="checkCard(5)">採点</button>
+      <button class="btn-reset" onclick="resetCard(5)">リセット</button>
+      <button class="btn-show-answer" onclick="showAnswer(5)">答えを見る</button>
+    </div>
+  </div>
+
+</main>
+<div class="section-bottom">
+  <div class="score-bar">
+    <span class="score-label">正答率</span>
+    <div class="score-track"><div class="score-fill" id="scoreFill"></div></div>
+    <span class="score-num" id="scoreNum">— / —</span>
+  </div>
+  <div class="all-btn-row">
+    <button class="btn-reset-all" onclick="resetAll()">リセット</button>
+  </div>
+</div>
+
+
+<!-- ═══ セクション②　語彙：意味4択 ═══ -->
+<div class="mc-wrap">
+  <div class="section-heading">◆ 語彙：意味4択</div>
+  <div class="section-description">次の語句の意味として最も適切なものをクリックして選びなさい。</div>
+  <div class="mc-grid">
+
+    <div class="mc-card">
+      <div class="question-number">語句 1</div>
+      <div class="vocab-word">屈辱</div>
+      <div class="choices" id="choices_mc1">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc1','ア')">ア　人から認められて、誇らしい思いをすること。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc1','イ')">イ　おさえつけられたり、はずかしめられたりして面目を失うこと。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc1','ウ')">ウ　失敗を反省して、自分から身を引くこと。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc1','エ')">エ　相手に反発して、自分の考えを強く示すこと。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc1"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 2</div>
+      <div class="vocab-word">そぐ</div>
+      <div class="choices" id="choices_mc2">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc2','ア')">ア　刃物で斜めに切り落とす。また、勢いや気持ちを弱める。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc2','イ')">イ　物事を少しずつ積み重ねて大きくする。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc2','ウ')">ウ　力を加えて、形をまっすぐに整える。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc2','エ')">エ　相手の意見を受け入れて、考えを合わせる。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc2"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 3</div>
+      <div class="vocab-word">忠実</div>
+      <div class="choices" id="choices_mc3">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc3','ア')">ア　気分によって態度を変えやすい様子。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc3','イ')">イ　人よりも先に新しい考えを示す様子。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc3','ウ')">ウ　言いつけや決まりに従い、まじめに務めを果たす様子。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc3','エ')">エ　周囲に合わせず、自分の考えだけを通す様子。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc3"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 4</div>
+      <div class="vocab-word">歴然</div>
+      <div class="choices" id="choices_mc4">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc4','ア')">ア　理由が複雑で、簡単には判断できない様子。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc4','イ')">イ　物証などにより、疑いなくはっきり分かる様子。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc4','ウ')">ウ　時間がたって、だんだん分からなくなる様子。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc4','エ')">エ　人によって受け止め方が大きく変わる様子。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc4"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 5</div>
+      <div class="vocab-word">介在</div>
+      <div class="choices" id="choices_mc5">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc5','ア')">ア　相手を押しのけて前に出ること。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc5','イ')">イ　物事の終わりに近づいていくこと。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc5','ウ')">ウ　両者の間にはさまって存在すること。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc5','エ')">エ　ある物を別の場所へ移し替えること。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc5"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 6</div>
+      <div class="vocab-word">不可欠</div>
+      <div class="choices" id="choices_mc6">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc6','ア')">ア　あると便利だが、なくても大きな問題はない様子。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc6','イ')">イ　必要以上に多く、かえって扱いにくい様子。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc6','ウ')">ウ　物事の存立にかかわるほど、なくてはならない様子。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc6','エ')">エ　今は使われず、役に立たなくなった様子。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc6"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 7</div>
+      <div class="vocab-word">負い目</div>
+      <div class="choices" id="choices_mc7">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc7','ア')">ア　人に先を越されて、悔しく思う気持ち。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc7','イ')">イ　世話になった人などに、いつか報いなければならないという思い。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc7','ウ')">ウ　相手の長所を認め、素直に尊敬する気持ち。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc7','エ')">エ　自分の失敗を忘れ、気にしないようにすること。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc7"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 8</div>
+      <div class="vocab-word">同化</div>
+      <div class="choices" id="choices_mc8">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc8','ア')">ア　互いの違いを保ったまま、距離を置いて関わること。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc8','イ')">イ　新しいものを受け入れず、元の状態を守ること。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc8','ウ')">ウ　別々のものを比べて、優劣を決めること。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc8','エ')">エ　違った風土や風習などになじんで、溶け込むこと。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc8"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 9</div>
+      <div class="vocab-word">卓抜</div>
+      <div class="choices" id="choices_mc9">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc9','ア')">ア　普通の人にはまねできないほど、ずばぬけてすぐれていること。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc9','イ')">イ　だれにでもできるほど、簡単で分かりやすいこと。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc9','ウ')">ウ　目立たないが、安定して続けられること。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc9','エ')">エ　少し変わっていて、周囲から浮いていること。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc9"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 10</div>
+      <div class="vocab-word">さらす</div>
+      <div class="choices" id="choices_mc10">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc10','ア')">ア　大切なものを隠して、他人に見せないようにする。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc10','イ')">イ　恥ずかしい状態などを、隠す所なく見せる。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc10','ウ')">ウ　必要な部分だけを選び出して、別に分ける。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc10','エ')">エ　汚れたものを水で洗って、きれいにする。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc10"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">語句 11</div>
+      <div class="vocab-word">のっとる</div>
+      <div class="choices" id="choices_mc11">
+        <button class="choice-btn" data-choice="ア" onclick="selectMc('mc11','ア')">ア　人のものを力ずくで奪い取る。</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectMc('mc11','イ')">イ　決められた基準として従う。</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectMc('mc11','ウ')">ウ　物事を途中でやめて退く。</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectMc('mc11','エ')">エ　考えを新しく作り直す。</button>
+      </div>
+      <div class="mc-result" id="mc_result_mc11"></div>
+    </div>
+
+  </div>
+  <div class="section-bottom">
+    <div class="score-bar">
+      <span class="score-label">正答率</span>
+      <div class="score-track"><div class="score-fill" id="mcScoreFill"></div></div>
+      <span class="score-num" id="mcScoreNum">— / —</span>
+    </div>
+    <div class="all-btn-row">
+      <button class="btn-reset-all" onclick="resetAllMc()">リセット</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ セクション③　語彙：短文穴埋め ═══ -->
+<div class="sc-wrap">
+  <div class="section-heading">◆ 語彙：短文穴埋め</div>
+  <div class="section-description">（　）に当てはまる語句を書きなさい。動詞など活用する語は、文に合う形に直して答えなさい。</div>
+
+  <div class="vocab-group">
+    <span class="vg-label">語群</span>
+    <span class="vg-word">屈辱</span>
+    <span class="vg-word">そぐ</span>
+    <span class="vg-word">忠実</span>
+    <span class="vg-word">歴然</span>
+    <span class="vg-word">介在</span>
+    <span class="vg-word">不可欠</span>
+    <span class="vg-word">負い目</span>
+    <span class="vg-word">同化</span>
+    <span class="vg-word">卓抜</span>
+    <span class="vg-word">さらす</span>
+    <span class="vg-word">のっとる</span>
+  </div>
+
+  <div class="sc-grid">
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">1</span>
+        <span class="sc-sentence">弁護士を<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc1"></span>させ、問題の解決にあたる。</span>
+        <span class="feedback-inline" id="fb_sc1"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_1" onclick="checkScCard(1)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_1"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">2</span>
+        <span class="sc-sentence">外国の文化を取り入れ、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc2"></span>しながら発展している。</span>
+        <span class="feedback-inline" id="fb_sc2"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_2" onclick="checkScCard(2)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_2"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">3</span>
+        <span class="sc-sentence">負けるはずのない相手に負け、初めての<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc3"></span>を味わった。</span>
+        <span class="feedback-inline" id="fb_sc3"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_3" onclick="checkScCard(3)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_3"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">4</span>
+        <span class="sc-sentence">毎日薬を飲むことが<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc4"></span>だ。</span>
+        <span class="feedback-inline" id="fb_sc4"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_4" onclick="checkScCard(4)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_4"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">5</span>
+        <span class="sc-sentence">スポーツマンシップに<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc5"></span>、正々堂々と戦った。</span>
+        <span class="feedback-inline" id="fb_sc5"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_5" onclick="checkScCard(5)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_5"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">6</span>
+        <span class="sc-sentence">部屋の惨状を見れば、トラブルが起きたことは<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc6"></span>だった。</span>
+        <span class="feedback-inline" id="fb_sc6"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_6" onclick="checkScCard(6)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_6"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">7</span>
+        <span class="sc-sentence">資金援助はありがたかったが、<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc7"></span>に感じてしまう。</span>
+        <span class="feedback-inline" id="fb_sc7"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_7" onclick="checkScCard(7)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_7"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">8</span>
+        <span class="sc-sentence">雨が降ったことで、体育祭に向けて高まっていた興奮がすっかり<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc8"></span>。</span>
+        <span class="feedback-inline" id="fb_sc8"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_8" onclick="checkScCard(8)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_8"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">9</span>
+        <span class="sc-sentence">決められた規則に<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc9"></span>に対応する。</span>
+        <span class="feedback-inline" id="fb_sc9"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_9" onclick="checkScCard(9)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_9"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">10</span>
+        <span class="sc-sentence">告発により、長年行われてきた不正が白日のもとに<span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc10"></span>。</span>
+        <span class="feedback-inline" id="fb_sc10"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_10" onclick="checkScCard(10)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_10"></div>
+    </div>
+
+    <div class="sc-card">
+      <div class="sc-main-row">
+        <span class="sc-num">11</span>
+        <span class="sc-sentence"><span class="blank-wrap"><input type="text" class="blank-input narrow" id="blank_sc11"></span>した技術がなければ、この曲を演奏することはできない。</span>
+        <span class="feedback-inline" id="fb_sc11"></span>
+        <button class="btn-check sc-check-btn" id="sc_check_11" onclick="checkScCard(11)">採点</button>
+      </div>
+      <div class="sc-reveal" id="sc_reveal_11"></div>
+    </div>
+
+  </div>
+
+  <div class="section-bottom">
+    <div class="score-bar">
+      <span class="score-label">正答率</span>
+      <div class="score-track"><div class="score-fill" id="scScoreFill"></div></div>
+      <span class="score-num" id="scScoreNum">— / —</span>
+    </div>
+    <div class="all-btn-row">
+      <button class="btn-reset-all" onclick="resetAllSc()">リセット</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══ セクション④　語彙：漢字 ═══ -->
+<div class="knj-wrap">
+  <div class="section-heading">◆ 語彙：漢字</div>
+
+  <div class="section-description">① 次の語句（ひらがなも含める）の読みを、ひらがなで書こう。</div>
+  <div class="rd-grid">
+
+    <div class="rd-card">
+      <div class="question-number">1</div>
+      <div class="rd-kanji">際立つ</div>
+      <input type="text" class="rd-input" id="blank_rd1" placeholder="よみ">
+      <div class="rd-fb" id="fb_rd1"></div>
+      <div class="rd-reveal" id="rd_reveal_1"></div>
+    </div>
+
+    <div class="rd-card">
+      <div class="question-number">2</div>
+      <div class="rd-kanji">ふくれっ面</div>
+      <input type="text" class="rd-input" id="blank_rd2" placeholder="よみ">
+      <div class="rd-fb" id="fb_rd2"></div>
+      <div class="rd-reveal" id="rd_reveal_2"></div>
+    </div>
+
+    <div class="rd-card">
+      <div class="question-number">3</div>
+      <div class="rd-kanji">愛想笑い</div>
+      <input type="text" class="rd-input" id="blank_rd3" placeholder="よみ">
+      <div class="rd-fb" id="fb_rd3"></div>
+      <div class="rd-reveal" id="rd_reveal_3"></div>
+    </div>
+
+  </div>
+  <div class="section-bottom rd-bottom">
+    <div class="score-bar">
+      <span class="score-label">正答率</span>
+      <div class="score-track"><div class="score-fill" id="rdScoreFill"></div></div>
+      <span class="score-num" id="rdScoreNum">— / —</span>
+    </div>
+    <div class="all-btn-row">
+      <button class="btn-check" style="font-size:14px;padding:10px 28px" onclick="checkAllRd()">すべて採点する</button>
+      <button class="btn-reset-all" onclick="resetAllRd()">リセット</button>
+    </div>
+  </div>
+
+  <div class="section-description knj-desc" style="margin-top:32px">② 次の傍線部の片仮名を漢字で書こう。最も適切なものをクリックして選びなさい。</div>
+  <div class="mc-grid knj-grid">
+
+    <div class="mc-card">
+      <div class="question-number">1</div>
+      <div class="knj-phrase">財産<span class="knj-kata">ゾウヨ</span></div>
+      <div class="choices" id="choices_knj1">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj1','ア')">ア　贈預</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj1','イ')">イ　増与</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj1','ウ')">ウ　贈与</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj1','エ')">エ　贈誉</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj1"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">2</div>
+      <div class="knj-phrase">激しい<span class="knj-kata">ゾウオ</span></div>
+      <div class="choices" id="choices_knj2">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj2','ア')">ア　憎悪</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj2','イ')">イ　増悪</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj2','ウ')">ウ　憎汚</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj2','エ')">エ　憎侶</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj2"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">3</div>
+      <div class="knj-phrase">天台宗の<span class="knj-kata">ソウリョ</span></div>
+      <div class="choices" id="choices_knj3">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj3','ア')">ア　僧旅</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj3','イ')">イ　増侶</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj3','ウ')">ウ　僧慮</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj3','エ')">エ　僧侶</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj3"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">4</div>
+      <div class="knj-phrase">改訂<span class="knj-kata">ゾウホ</span>版</div>
+      <div class="choices" id="choices_knj4">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj4','ア')">ア　増保</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj4','イ')">イ　増補</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj4','ウ')">ウ　贈補</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj4','エ')">エ　憎補</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj4"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">5</div>
+      <div class="knj-phrase">ご<span class="knj-kata">シュウギ</span>袋</div>
+      <div class="choices" id="choices_knj5">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj5','ア')">ア　祝議</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj5','イ')">イ　祝技</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj5','ウ')">ウ　祝儀</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj5','エ')">エ　祝犠</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj5"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">6</div>
+      <div class="knj-phrase">事前<span class="knj-kata">キョウギ</span></div>
+      <div class="choices" id="choices_knj6">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj6','ア')">ア　協義</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj6','イ')">イ　協議</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj6','ウ')">ウ　協技</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj6','エ')">エ　狭議</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj6"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">7</div>
+      <div class="knj-phrase"><span class="knj-kata">ギセイ</span>フライ</div>
+      <div class="choices" id="choices_knj7">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj7','ア')">ア　犠性</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj7','イ')">イ　義牲</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj7','ウ')">ウ　犠牲</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj7','エ')">エ　儀牲</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj7"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">8</div>
+      <div class="knj-phrase">言論を<span class="knj-kata">ヨクアツ</span>する</div>
+      <div class="choices" id="choices_knj8">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj8','ア')">ア　抑当</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj8','イ')">イ　抑応</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj8','ウ')">ウ　億圧</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj8','エ')">エ　抑圧</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj8"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">9</div>
+      <div class="knj-phrase">雷に<span class="knj-kata">ギョウテン</span></div>
+      <div class="choices" id="choices_knj9">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj9','ア')">ア　仰天</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj9','イ')">イ　驚天</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj9','ウ')">ウ　業天</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj9','エ')">エ　仰点</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj9"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">10</div>
+      <div class="knj-phrase">世間に<span class="knj-kata">ゲイゴウ</span>する</div>
+      <div class="choices" id="choices_knj10">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj10','ア')">ア　迎業</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj10','イ')">イ　迎合</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj10','ウ')">ウ　鯨合</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj10','エ')">エ　迎号</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj10"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">11</div>
+      <div class="knj-phrase"><span class="knj-kata">リュウビ</span>を逆立てる</div>
+      <div class="choices" id="choices_knj11">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj11','ア')">ア　柳美</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj11','イ')">イ　劉眉</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj11','ウ')">ウ　柳眉</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj11','エ')">エ　留眉</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj11"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">12</div>
+      <div class="knj-phrase">賞金を<span class="knj-kata">カクトク</span></div>
+      <div class="choices" id="choices_knj12">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj12','ア')">ア　各得</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj12','イ')">イ　確得</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj12','ウ')">ウ　穫得</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj12','エ')">エ　獲得</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj12"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">13</div>
+      <div class="knj-phrase">野菜を<span class="knj-kata">シュウカク</span></div>
+      <div class="choices" id="choices_knj13">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj13','ア')">ア　収獲</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj13','イ')">イ　収穫</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj13','ウ')">ウ　拾穫</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj13','エ')">エ　修穫</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj13"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">14</div>
+      <div class="knj-phrase">負傷者を<span class="knj-kata">キュウゴ</span></div>
+      <div class="choices" id="choices_knj14">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj14','ア')">ア　救誤</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj14','イ')">イ　給護</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj14','ウ')">ウ　救護</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj14','エ')">エ　救悟</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj14"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">15</div>
+      <div class="knj-phrase">物々<span class="knj-kata">コウカン</span></div>
+      <div class="choices" id="choices_knj15">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj15','ア')">ア　交歓</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj15','イ')">イ　交換</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj15','ウ')">ウ　交感</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj15','エ')">エ　交還</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj15"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">16</div>
+      <div class="knj-phrase"><span class="knj-kata">コウカン</span>神経</div>
+      <div class="choices" id="choices_knj16">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj16','ア')">ア　交感</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj16','イ')">イ　交換</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj16','ウ')">ウ　交歓</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj16','エ')">エ　恒感</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj16"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">17</div>
+      <div class="knj-phrase">賀詞<span class="knj-kata">コウカン</span>会</div>
+      <div class="choices" id="choices_knj17">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj17','ア')">ア　交換</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj17','イ')">イ　交歓</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj17','ウ')">ウ　交感</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj17','エ')">エ　恒歓</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj17"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">18</div>
+      <div class="knj-phrase"><span class="knj-kata">ソウギ</span>場</div>
+      <div class="choices" id="choices_knj18">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj18','ア')">ア　葬議</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj18','イ')">イ　争議</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj18','ウ')">ウ　葬儀</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj18','エ')">エ　装儀</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj18"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">19</div>
+      <div class="knj-phrase">労働<span class="knj-kata">ソウギ</span></div>
+      <div class="choices" id="choices_knj19">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj19','ア')">ア　葬儀</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj19','イ')">イ　争議</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj19','ウ')">ウ　争儀</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj19','エ')">エ　争技</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj19"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">20</div>
+      <div class="knj-phrase">猫と寄り<span class="knj-kata">ソ</span>う</div>
+      <div class="choices" id="choices_knj20">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj20','ア')">ア　沿</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj20','イ')">イ　副</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj20','ウ')">ウ　添</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj20','エ')">エ　傍</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj20"></div>
+    </div>
+
+    <div class="mc-card">
+      <div class="question-number">21</div>
+      <div class="knj-phrase">流れに<span class="knj-kata">ソ</span>う</div>
+      <div class="choices" id="choices_knj21">
+        <button class="choice-btn" data-choice="ア" onclick="selectKnj('knj21','ア')">ア　添</button>
+        <button class="choice-btn" data-choice="イ" onclick="selectKnj('knj21','イ')">イ　沿</button>
+        <button class="choice-btn" data-choice="ウ" onclick="selectKnj('knj21','ウ')">ウ　副</button>
+        <button class="choice-btn" data-choice="エ" onclick="selectKnj('knj21','エ')">エ　傍</button>
+      </div>
+      <div class="mc-result" id="mc_result_knj21"></div>
+    </div>
+
+  </div>
+  <div class="section-bottom knj-bottom">
+    <div class="score-bar">
+      <span class="score-label">正答率</span>
+      <div class="score-track"><div class="score-fill" id="knjScoreFill"></div></div>
+      <span class="score-num" id="knjScoreNum">— / —</span>
+    </div>
+    <div class="all-btn-row">
+      <button class="btn-reset-all" onclick="resetAllKnj()">リセット</button>
+    </div>
+  </div>
+</div>
+
+<!-- 復習資料ボタン -->
+<button id="study-btn" onclick="openStudyGuide()">📖 復習資料<br>を出力</button>
+
+<script>
+  // ═══ ① 読解穴埋め データ ═══
+  const answers = {
+    blank1_1: { type:"exact", values:["時間"] },
+    blank2_1: { type:"exact", values:["時間差"] },
+    blank2_2: { type:"exact", values:["値札"] },
+    blank2_3: { type:"exact", values:["リボン"] },
+    blank2_4: { type:"exact", values:["包装"] },
+    blank3_1: { type:"exact", values:["思い"] },
+    blank3_2: { type:"exact", values:["感情"] },
+    blank4_1: { type:"exact", values:["共感"] },
+    blank5_1: { type:"exact", values:["白目"] },
+    blank5_2: { type:"exact", values:["共感"] },
+  };
+  const cardBlanks = {
+    1: ["blank1_1"],
+    2: ["blank2_1", "blank2_2", "blank2_3", "blank2_4"],
+    3: ["blank3_1", "blank3_2"],
+    4: ["blank4_1"],
+    5: ["blank5_1", "blank5_2"],
+  };
+
+  // ═══ ③ 短文穴埋め データ ═══
+  const scAnswers = {
+    blank_sc1: ["介在"],
+    blank_sc2: ["同化"],
+    blank_sc3: ["屈辱"],
+    blank_sc4: ["不可欠"],
+    blank_sc5: ["のっとり"],
+    blank_sc6: ["歴然"],
+    blank_sc7: ["負い目"],
+    blank_sc8: ["そがれた"],
+    blank_sc9: ["忠実"],
+    blank_sc10: ["さらされた"],
+    blank_sc11: ["卓抜"],
+  };
+
+  // ═══ ② 意味4択 データ ═══
+  const mcAnswers = {
+    mc1: "イ",
+    mc2: "ア",
+    mc3: "ウ",
+    mc4: "イ",
+    mc5: "ウ",
+    mc6: "ウ",
+    mc7: "イ",
+    mc8: "エ",
+    mc9: "ア",
+    mc10: "イ",
+    mc11: "イ",
+  };
+
+  // ═══ ④ 漢字読み データ ═══
+  const rdAnswers = {
+    blank_rd1: ["きわだつ"],
+    blank_rd2: ["ふくれっつら"],
+    blank_rd3: ["あいそわらい"],
+  };
+
+  // ═══ ④ 漢字書き データ ═══
+  const knjAnswers = {
+    knj1:  "ウ",
+    knj2:  "ア",
+    knj3:  "エ",
+    knj4:  "イ",
+    knj5:  "ウ",
+    knj6:  "イ",
+    knj7:  "ウ",
+    knj8:  "エ",
+    knj9:  "ア",
+    knj10: "イ",
+    knj11: "ウ",
+    knj12: "エ",
+    knj13: "イ",
+    knj14: "ウ",
+    knj15: "イ",
+    knj16: "ア",
+    knj17: "イ",
+    knj18: "ウ",
+    knj19: "イ",
+    knj20: "ウ",
+    knj21: "イ",
+  };
+
+  // ───────────────────────────────────────────────────────────────────
+  //  共通ロジック
+  // ───────────────────────────────────────────────────────────────────
+
+  function normalize(s) {
+    return s.trim().replace(/\s+/g,"").replace(/（/g,"(").replace(/）/g,")");
+  }
+
+  // ─── 読解穴埋め ────────────────────────────────────────────────
+  function checkBlank(id) {
+    const input=document.getElementById(id);
+    const fb=document.getElementById("fb"+id.replace("blank",""));
+    const ans=answers[id], val=input.value;
+    if (!val.trim()) { input.classList.remove("correct","wrong"); fb.style.display="none"; return null; }
+    let result;
+    if (ans.type==="example") {
+      result=true; input.classList.remove("wrong"); input.classList.add("correct");
+      fb.className="feedback-inline correct"; fb.textContent="記入済"; fb.style.display="inline";
+    } else {
+      result=ans.values.some(v=>normalize(v)===normalize(val));
+      input.classList.remove("correct","wrong"); input.classList.add(result?"correct":"wrong");
+      fb.className="feedback-inline "+(result?"correct":"wrong");
+      fb.textContent=result?"○":"×"; fb.style.display="inline";
+    }
+    return result;
+  }
+  function checkCard(n)  { cardBlanks[n].forEach(id=>checkBlank(id)); updateScore(); }
+  function resetCard(n)  {
+    cardBlanks[n].forEach(id=>{
+      const i=document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+      const f=document.getElementById("fb"+id.replace("blank","")); if(f) f.style.display="none";
+    });
+    document.getElementById("hint"+n).style.display="none"; updateScore();
+  }
+  function showAnswer(n) { const h=document.getElementById("hint"+n); h.style.display=h.style.display==="block"?"none":"block"; }
+  function resetAll()    {
+    for(let n=1;n<=Object.keys(cardBlanks).length;n++) resetCard(n);
+  }
+  function updateScore() {
+    const all=Object.keys(answers); let t=0,c=0;
+    all.forEach(id=>{
+      const v=document.getElementById(id).value.trim(); if(!v) return; t++;
+      const a=answers[id];
+      if(a.type==="example") c++;
+      else if(a.values.some(v2=>normalize(v2)===normalize(v))) c++;
+    });
+    const fill=document.getElementById("scoreFill"),num=document.getElementById("scoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/all.length*100)+"%";
+    num.textContent=c+" / "+all.length+" 問正解";
+  }
+
+  // ─── 短文穴埋め ───────────────────────────────────────────────
+  function checkScBlank(id) {
+    const input=document.getElementById(id);
+    const fb=document.getElementById("fb"+id.replace("blank",""));
+    const vals=scAnswers[id], val=input.value;
+    if (!val.trim()) { input.classList.remove("correct","wrong"); fb.style.display="none"; return null; }
+    const result=vals.some(v=>normalize(v)===normalize(val));
+    input.classList.remove("correct","wrong"); input.classList.add(result?"correct":"wrong");
+    fb.className="feedback-inline"; void fb.offsetWidth;
+    fb.className="feedback-inline "+(result?"correct":"wrong");
+    fb.textContent=result?"✓ 正解！":"×"; fb.style.display="inline";
+    return result;
+  }
+  function checkScCard(n) {
+    const id="blank_sc"+n;
+    const result=checkScBlank(id);
+    const reveal=document.getElementById("sc_reveal_"+n);
+    if (result===false) { reveal.textContent="正解: "+scAnswers[id][0]; reveal.style.display="block"; }
+    else               { reveal.style.display="none"; }
+    updateScScore();
+  }
+  function resetScCard(n) {
+    const id="blank_sc"+n;
+    const i=document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+    const f=document.getElementById("fb_sc"+n); if(f) f.style.display="none";
+    const r=document.getElementById("sc_reveal_"+n); if(r) r.style.display="none";
+    updateScScore();
+  }
+  function resetAllSc() {
+    for(let n=1;n<=Object.keys(scAnswers).length;n++) resetScCard(n);
+  }
+  function updateScScore() {
+    const ids=Object.keys(scAnswers); let t=0,c=0;
+    ids.forEach(id=>{
+      const v=document.getElementById(id).value.trim(); if(!v) return; t++;
+      if(scAnswers[id].some(v2=>normalize(v2)===normalize(v))) c++;
+    });
+    const fill=document.getElementById("scScoreFill"),num=document.getElementById("scScoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/ids.length*100)+"%";
+    num.textContent=c+" / "+ids.length+" 問正解";
+  }
+
+  // ─── 意味4択 ───────────────────────────────────────────────────
+  function selectMc(qid, choice) {
+    const choicesEl=document.getElementById("choices_"+qid);
+    if (choicesEl.classList.contains("graded")) return;
+    const correct=mcAnswers[qid];
+    choicesEl.querySelectorAll(".choice-btn").forEach(btn=>{
+      btn.classList.remove("selected","correct","wrong","reveal-correct");
+      const c=btn.dataset.choice;
+      if      (c===correct && c===choice) btn.classList.add("correct");
+      else if (c===choice)                btn.classList.add("wrong");
+      else if (c===correct)               btn.classList.add("reveal-correct");
+    });
+    choicesEl.classList.add("graded");
+    const resultEl=document.getElementById("mc_result_"+qid);
+    resultEl.textContent = choice===correct ? "✓ 正解！" : "✗ 不正解";
+    resultEl.className   = "mc-result " + (choice===correct ? "correct" : "wrong");
+    updateMcScore();
+  }
+  function resetAllMc() {
+    Object.keys(mcAnswers).forEach(qid=>{
+      const el=document.getElementById("choices_"+qid);
+      el.classList.remove("graded");
+      el.querySelectorAll(".choice-btn").forEach(b=>b.classList.remove("selected","correct","wrong","reveal-correct"));
+      const r=document.getElementById("mc_result_"+qid);
+      r.className="mc-result"; r.textContent="";
+    });
+    updateMcScore();
+  }
+  function updateMcScore() {
+    let t=0,c=0;
+    Object.keys(mcAnswers).forEach(qid=>{
+      document.querySelectorAll("#choices_"+qid+" .choice-btn").forEach(b=>{
+        if(b.classList.contains("correct")){t++;c++;}
+        else if(b.classList.contains("wrong")){t++;}
+      });
+    });
+    const fill=document.getElementById("mcScoreFill"),num=document.getElementById("mcScoreNum");
+    const max=Object.keys(mcAnswers).length;
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width=Math.round(c/max*100)+"%";
+    num.textContent=c+" / "+max+" 問正解";
+  }
+
+  // ─── 漢字読み ──────────────────────────────────────────────────
+  function checkRdBlank(id) {
+    const input = document.getElementById(id);
+    const n = id.replace("blank_rd","");
+    const fb = document.getElementById("fb_rd"+n);
+    const reveal = document.getElementById("rd_reveal_"+n);
+    const vals = rdAnswers[id], val = input.value;
+    if (!val.trim()) {
+      input.classList.remove("correct","wrong");
+      fb.className = "rd-fb"; fb.textContent = "";
+      if(reveal) reveal.style.display = "none";
+      return null;
+    }
+    const result = vals.some(v => normalize(v) === normalize(val));
+    input.classList.remove("correct","wrong");
+    input.classList.add(result ? "correct" : "wrong");
+    fb.className = "rd-fb "+(result ? "correct" : "wrong");
+    fb.textContent = result ? "✓ 正解！" : "×";
+    if (!result) { reveal.textContent = "正解: "+vals[0]; reveal.style.display = "block"; }
+    else { reveal.style.display = "none"; }
+    updateRdScore();
+    return result;
+  }
+  function checkAllRd() { Object.keys(rdAnswers).forEach(id => checkRdBlank(id)); }
+  function resetAllRd() {
+    Object.keys(rdAnswers).forEach(id => {
+      const n = id.replace("blank_rd","");
+      const i = document.getElementById(id); i.value=""; i.classList.remove("correct","wrong");
+      const f = document.getElementById("fb_rd"+n); if(f){ f.className="rd-fb"; f.textContent=""; }
+      const r = document.getElementById("rd_reveal_"+n); if(r) r.style.display="none";
+    });
+    updateRdScore();
+  }
+  function updateRdScore() {
+    const ids = Object.keys(rdAnswers); let t=0, c=0;
+    ids.forEach(id => {
+      const v = document.getElementById(id).value.trim(); if(!v) return; t++;
+      if(rdAnswers[id].some(v2 => normalize(v2)===normalize(v))) c++;
+    });
+    const fill = document.getElementById("rdScoreFill"), num = document.getElementById("rdScoreNum");
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width = Math.round(c/ids.length*100)+"%";
+    num.textContent = c+" / "+ids.length+" 問正解";
+  }
+
+  // ─── 漢字書き4択 ──────────────────────────────────────────────
+  function selectKnj(qid, choice) {
+    const choicesEl = document.getElementById("choices_"+qid);
+    if (choicesEl.classList.contains("graded")) return;
+    const correct = knjAnswers[qid];
+    choicesEl.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.classList.remove("selected","correct","wrong","reveal-correct");
+      const c = btn.dataset.choice;
+      if      (c===correct && c===choice) btn.classList.add("correct");
+      else if (c===choice)                btn.classList.add("wrong");
+      else if (c===correct)               btn.classList.add("reveal-correct");
+    });
+    choicesEl.classList.add("graded");
+    const resultEl = document.getElementById("mc_result_"+qid);
+    resultEl.textContent = choice===correct ? "✓ 正解！" : "✗ 不正解";
+    resultEl.className   = "mc-result " + (choice===correct ? "correct" : "wrong");
+    updateKnjScore();
+  }
+  function resetAllKnj() {
+    Object.keys(knjAnswers).forEach(qid => {
+      const el = document.getElementById("choices_"+qid);
+      el.classList.remove("graded");
+      el.querySelectorAll(".choice-btn").forEach(b => b.classList.remove("selected","correct","wrong","reveal-correct"));
+      const r = document.getElementById("mc_result_"+qid);
+      r.className = "mc-result"; r.textContent = "";
+    });
+    updateKnjScore();
+  }
+  function updateKnjScore() {
+    let t=0, c=0;
+    Object.keys(knjAnswers).forEach(qid => {
+      document.querySelectorAll("#choices_"+qid+" .choice-btn").forEach(b => {
+        if(b.classList.contains("correct")){t++;c++;}
+        else if(b.classList.contains("wrong")){t++;}
+      });
+    });
+    const fill = document.getElementById("knjScoreFill"), num = document.getElementById("knjScoreNum");
+    const max = Object.keys(knjAnswers).length;
+    if(!t){fill.style.width="0%";num.textContent="— / —";return;}
+    fill.style.width = Math.round(c/max*100)+"%";
+    num.textContent = c+" / "+max+" 問正解";
+  }
+
+  // ─── 復習資料生成 ─────────────────────────────────────────────
+  function openStudyGuide() {
+    const vocab = [
+      { w:'屈辱', m:'おさえつけられたり、はずかしめられたりして面目を失うこと。', e:'負けるはずのない相手に負け、初めての屈辱を味わった。' },
+      { w:'そぐ', m:'刃物で斜めに切り落とす。また、勢いや気持ちを弱める。', e:'雨が降ったことで、興奮がすっかりそがれた。' },
+      { w:'忠実', m:'言いつけや決まりに従い、まじめに務めを果たす様子。', e:'決められた規則に忠実に対応する。' },
+      { w:'歴然', m:'物証などにより、疑いなくはっきり分かる様子。', e:'部屋の惨状を見れば、トラブルが起きたことは歴然だった。' },
+      { w:'介在', m:'両者の間にはさまって存在すること。', e:'弁護士を介在させ、問題の解決にあたる。' },
+      { w:'不可欠', m:'物事の存立にかかわるほど、なくてはならない様子。', e:'毎日薬を飲むことが不可欠だ。' },
+      { w:'負い目', m:'世話になった人などに、いつか報いなければならないという思い。', e:'資金援助はありがたかったが、負い目に感じてしまう。' },
+      { w:'同化', m:'違った風土や風習などになじんで、溶け込むこと。', e:'外国の文化を取り入れ、同化しながら発展している。' },
+      { w:'卓抜', m:'普通の人にはまねできないほど、ずばぬけてすぐれていること。', e:'卓抜した技術がなければ、この曲を演奏することはできない。' },
+      { w:'さらす', m:'恥ずかしい状態などを、隠す所なく見せる。', e:'不正が白日のもとにさらされた。' },
+      { w:'のっとる', m:'決められた基準として従う。', e:'スポーツマンシップにのっとり、正々堂々と戦った。' },
+    ];
+
+    const vocabHTML = vocab.map(v =>
+      `<div class="vi"><div class="vw">${v.w}</div><div class="vm">${v.m}</div><div class="ve">${v.e}</div></div>`
+    ).join('');
+
+    const html = `<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<title>贈り物と商品の違い｜復習資料</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{writing-mode:vertical-rl;text-orientation:mixed;overflow-x:hidden}
+body{
+  font-family:"Hiragino Mincho ProN","Yu Mincho","MS Mincho",serif;
+  color:#1a1a2e;
+  padding:12mm 14mm;
+  font-size:25px;
+  line-height:2.0;
+  background:#fff;
+  display:flex;
+  flex-direction:row;
+  gap:3em;
+}
+.pbtn-wrap{writing-mode:horizontal-tb;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px}
+.pbtn{font-family:sans-serif;font-size:14px;font-weight:bold;background:#2c5f8a;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer}
+.pbtn-back{background:#e4e9ef;color:#444;}
+.dh{text-align:center;border-left:2px solid #ccd6e0;padding-left:12px;margin-left:10px}
+.dh h1{font-size:32px;color:#2c5f8a;font-weight:bold;margin-bottom:6px}
+.dh p{font-size:20px;color:#777}
+.sec{margin-left:2em}
+.stitle{
+  font-family:"Hiragino Kaku Gothic ProN",sans-serif;
+  font-size:24px;font-weight:bold;
+  color:#fff;background:#2c5f8a;
+  padding:3px 10px;border-radius:3px;
+  display:inline-block;margin-bottom:1.2em;
+}
+.ri{margin-bottom:1.6em;break-inside:avoid}
+.rlabel{
+  font-family:"Hiragino Kaku Gothic ProN",sans-serif;
+  font-size:20px;font-weight:bold;
+  color:#2c5f8a;background:#e8f2f9;
+  display:inline-block;
+  padding:1px 7px;border-radius:8px;margin-bottom:0.6em;
+}
+.rbody{
+  font-size:25px;line-height:2.2;
+  border-right:3px solid #2c5f8a;
+  padding:6px 10px;background:#fafbfd;
+}
+.br{display:block;padding-right:1em}
+.ans{font-weight:bold;color:#2c5f8a;text-decoration:underline;text-underline-offset:3px}
+.reading-sec,.vocab-sec{flex-shrink:0;width:100%}
+.vgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.vi{break-inside:avoid;border:1px solid #ccd6e0;border-radius:5px;padding:8px 10px;margin-bottom:10px}
+.vw{font-size:34px;font-weight:bold;color:#1a1a2e;margin-bottom:5px}
+.vm{font-size:23px;line-height:1.8;color:#1a1a2e;margin-bottom:5px}
+.ve{font-size:22px;color:#555;border-top:1px dashed #ccc;padding-top:4px;line-height:1.8}
+.ve::before{content:"例　";font-size:20px;font-weight:bold;color:#2c5f8a;font-family:sans-serif}
+@media screen{
+  .sec{height:90vh;overflow:hidden}
+}
+@media print{
+  body{display:block;padding:8mm 10mm}
+  .pbtn-wrap{display:none}
+  .reading-sec{break-after:page;page-break-after:always}
+  .vocab-sec{break-before:page;page-break-before:always}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style></head><body>
+<div class="sec reading-sec">
+<div class="dh">
+  <h1>贈り物と商品の違い</h1>
+  <p>現代国語　経済から世界を捉える ◇⑤　松村圭一郎</p>
+</div>
+<span class="stitle">◆ 読解まとめ</span>
+
+<div class="ri">
+  <span class="rlabel">問１　商品交換と贈与を分けるもの</span>
+  <div class="rbody">社会学者ブルデュによれば、商品交換と贈与を区別しているのは、モノのやりとりの間に差しはさまれた<span class="ans">時間</span>である。等価なものでもすぐに交換すれば「商品交換」、時間を置けば「贈与」の返礼とみなされる。</div>
+</div>
+
+<div class="ri">
+  <span class="rlabel">問２　贈り物らしさを演出する印</span>
+  <div class="rbody">
+    <span class="br">商品と贈り物は、<span class="ans">時間差・値札・リボン・包装</span>という外的な表示でしか区別できない。</span>
+    <span class="br">値札を外し、包装やリボンをつけることで「商品らしさ」を消し、「贈り物らしさ」を演出する。</span>
+  </div>
+</div>
+
+<div class="ri">
+  <span class="rlabel">問３　経済／非経済の区別の役割</span>
+  <div class="rbody">経済と非経済の区別は、モノのやりとりに<span class="ans">思いや感情</span>を付加したり除去したりする装置。商品交換の場では思いは差し引かれ、贈与の場では思いがこめられる。</div>
+</div>
+
+<div class="ri">
+  <span class="rlabel">問４　交換が抑圧するもの</span>
+  <div class="rbody">商品交換はやりとりを一回で完結・精算させ、「負い目」や「感謝」を「なかったこと」にする。この関係は、コミュニケーションの基盤となる<span class="ans">共感</span>を抑圧する。</div>
+</div>
+
+<div class="ri">
+  <span class="rlabel">問５　共感を支える身体的基盤</span>
+  <div class="rbody">人間は進化の過程で<span class="ans">白目</span>の部分を大きくし、瞳の動きを相手にさらすことを選んだ。これにより互いに感情を示し合い、<span class="ans">共感</span>が生じる可能性を身体的に保証した。</div>
+</div>
+
+</div>
+
+<div class="sec vocab-sec">
+<span class="stitle">◆ 語彙まとめ</span>
+<div class="vgrid">${vocabHTML}</div>
+</div>
+
+<div class="pbtn-wrap"><button class="pbtn pbtn-back" onclick="window.close()">← 演習に戻る</button><button class="pbtn" onclick="window.print()">🖨 PDFに保存</button></div>
+
+</body></html>`;
+
+    const win = window.open('', '_blank');
+    if (!win) { alert('ポップアップがブロックされました。許可してから再度お試しください。'); return; }
+    win.document.write(html);
+    win.document.close();
+  }
+
+  // ─── 語群シャッフル ───────────────────────────────────────────
+  (function(){
+    const group = document.querySelector(".vocab-group");
+    const words = [...group.querySelectorAll(".vg-word")];
+    for (let i = words.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [words[i], words[j]] = [words[j], words[i]];
+    }
+    words.forEach(w => group.appendChild(w));
+  })();
+
+  // ─── Enterキー ────────────────────────────────────────────────
+  document.querySelectorAll(".blank-input").forEach(input=>{
+    input.addEventListener("keydown", e=>{
+      if (e.key!=="Enter") return;
+      const id=input.id;
+      const mSc=id.match(/blank_sc(\d+)/);
+      if (mSc) {
+        e.preventDefault();
+        const btn=document.getElementById("sc_check_"+mSc[1]);
+        if (btn) btn.focus();
+        return;
+      }
+      const mRd=id.match(/blank(\d+)_/);
+      if (mRd) checkCard(parseInt(mRd[1]));
+    });
+  });
+
+  document.querySelectorAll(".rd-input").forEach(input=>{
+    input.addEventListener("keydown", e=>{
+      if (e.key!=="Enter") return;
+      e.preventDefault();
+      checkRdBlank(input.id);
+    });
+  });
+</script>
+</body>
+</html>
